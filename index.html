@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenX CRM Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col overflow-hidden">
+
+  <!-- ========================================== -->
+  <!-- CRM AUTHENTICATION OVERLAY                 -->
+  <!-- ========================================== -->
+  <div id="authOverlay" class="fixed inset-0 bg-slate-950 z-[99999] flex flex-col items-center justify-center transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
+      <div class="w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/20">
+        <i data-lucide="shield-alert" class="w-8 h-8 text-white"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-2">Secure CRM Login</h2>
+      <p class="text-sm text-slate-400 mb-8 leading-relaxed">Access is strictly restricted to authorized OpenX administrators. Sign in to verify your credentials.</p>
+      
+      <button id="btnGoogleLogin" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-md">
+        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign in with Google
+      </button>
+      
+      <p id="loginError" class="text-rose-400 text-sm mt-5 hidden font-medium bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg"></p>
+    </div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 py-4 flex items-center justify-between z-10 sticky top-0">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">OX</div>
+      <h1 class="text-lg font-semibold text-white">OpenX Smartboard CRM</h1>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 mr-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span id="adminEmailDisplay" class="text-xs font-medium text-slate-300">Admin</span>
+      </div>
+      <button onclick="exportToCSV()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border border-slate-700">
+        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Export All
+      </button>
+      <button onclick="openCreateModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+        <i data-lucide="key" class="w-4 h-4"></i> Generate Keys
+      </button>
+      <button id="btnAdminLogout" title="Sign Out" class="ml-2 text-slate-400 hover:text-white transition-colors p-2 bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 rounded-lg">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="mainAppContent" class="flex-1 p-6 space-y-6 max-w-7xl mx-auto w-full overflow-y-auto hidden opacity-0 transition-opacity duration-500">
+    
+    <!-- KPI Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Active Valid Keys</p>
+          <h2 id="statActiveUsers" class="text-2xl font-bold text-white mt-1">0</h2>
+        </div>
+        <div class="p-3 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/20">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Total Generated Keys</p>
+          <h2 id="statTotalUsers" class="text-2xl font-bold text-white mt-1">0</h2>
+        </div>
+        <div class="p-3 bg-slate-800 rounded-lg text-slate-400 border border-slate-700">
+          <i data-lucide="database" class="w-6 h-6"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanban Pipeline Board -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start pb-10">
+      
+      <!-- Column 1: Scheduled / Pending Start -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[650px]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-sm text-slate-300">Pending Start</h3>
+          <span class="text-xs font-medium bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full" id="count-leadIn">0</span>
+        </div>
+        <div id="column-leadIn" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+      </div>
+
+      <!-- Column 2: Active Access -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[650px]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-sm text-indigo-400">Active Access</h3>
+          <span class="text-xs font-medium bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/20" id="count-activeTrial">0</span>
+        </div>
+        <div id="column-activeTrial" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+      </div>
+
+      <!-- Column 3: Lifetime Access -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[650px]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-sm text-emerald-400">Lifetime Access</h3>
+          <span class="text-xs font-medium bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20" id="count-closedWon">0</span>
+        </div>
+        <div id="column-closedWon" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+      </div>
+
+      <!-- Column 4: Expired Access -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[650px]">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-sm text-rose-400">Expired Access</h3>
+          <span class="text-xs font-medium bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full border border-rose-500/20" id="count-expired">0</span>
+        </div>
+        <div id="column-expired" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Create Key Modal -->
+  <div id="createModalBackdrop" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 transition-opacity flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-white">Generate App Keys</h3>
+        <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form id="createKeyForm" class="p-6 space-y-5">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Buyer / School Name</label>
+            <input type="text" id="newBuyerName" required placeholder="e.g., Tech High School" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Buyer Contact Email</label>
+            <input type="email" id="newBuyerEmail" required placeholder="admin@school.edu" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+          </div>
+        </div>
+
+        <hr class="border-slate-800" />
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Start Date</label>
+            <input type="date" id="newStartDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" style="color-scheme: dark;">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">End Date</label>
+            <input type="date" id="newEndDate" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" style="color-scheme: dark;">
+            <p class="text-[10px] text-slate-500 mt-1">Leave empty for Lifetime</p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Number of Keys to Generate</label>
+          <input type="number" id="keyCount" min="1" max="50" value="1" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+          <p class="text-[10px] text-slate-500 mt-1">1 key = 1 device. Generate multiple for multi-device clients.</p>
+        </div>
+        
+        <div class="pt-2 flex gap-3">
+          <button type="button" onclick="closeCreateModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+          <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors">Generate Keys</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slide-Over Drawer for Key Details -->
+  <div id="drawerBackdrop" onclick="closeDrawer()" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden z-40 transition-opacity"></div>
+  <aside id="drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-slate-900 border-l border-slate-800 p-6 shadow-2xl translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col justify-between overflow-y-auto">
+    <div>
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 class="text-lg font-semibold text-white">License Details</h3>
+        <button onclick="closeDrawer()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="mt-6 space-y-5">
+        
+        <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-800 space-y-3">
+          <div>
+            <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Purchased By</label>
+            <p id="drawerBuyerName" class="text-sm font-medium text-white">-</p>
+            <p id="drawerBuyerEmail" class="text-xs text-slate-400 mt-0.5">-</p>
+          </div>
+          <button id="btnEmailBuyer" class="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 border border-slate-700 py-2 rounded-md text-xs font-medium transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="mail" class="w-3 h-3"></i> Download CSV & Compose Email
+          </button>
+        </div>
+
+        <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 relative group">
+          <label class="text-xs text-slate-500 uppercase font-semibold">App Access Key</label>
+          <p id="drawerCode" class="text-lg font-mono text-indigo-400 mt-1 break-all select-all">-</p>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500 uppercase font-semibold">Claimed By (Device Account)</label>
+          <p id="drawerEmail" class="text-base text-white font-medium break-all mt-1">-</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs text-slate-500 uppercase font-semibold">Start Date</label>
+            <p id="drawerStartDate" class="text-sm text-slate-300 mt-1">-</p>
+          </div>
+          <div>
+            <label class="text-xs text-slate-500 uppercase font-semibold">Status / Time</label>
+            <p id="drawerStatus" class="text-sm text-slate-300 mt-1">-</p>
+          </div>
+        </div>
+
+        <hr class="border-slate-800 my-4" />
+
+        <div class="space-y-2">
+          <label class="text-xs text-slate-400 font-semibold mb-2 block">Quick Actions</label>
+          <button id="btnResetClaim" class="w-full bg-amber-600/10 hover:bg-amber-600/20 text-amber-400 border border-amber-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
+            <span>Unbind Key (Reset Claim)</span>
+            <i data-lucide="unlock" class="w-4 h-4 opacity-50"></i>
+          </button>
+          <button id="btnExtend7" class="w-full bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
+            <span>+ Extend Expiration by 7 Days</span>
+            <i data-lucide="calendar-plus" class="w-4 h-4 opacity-50"></i>
+          </button>
+          <button id="btnExtend30" class="w-full bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
+            <span>+ Extend Expiration by 30 Days</span>
+            <i data-lucide="calendar-plus" class="w-4 h-4 opacity-50"></i>
+          </button>
+          <button id="btnLifetime" class="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
+            <span>Grant Lifetime Access</span>
+            <i data-lucide="infinity" class="w-4 h-4 opacity-50"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-6 mt-6 border-t border-slate-800">
+      <button id="btnRevoke" class="w-full bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/20 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+        <i data-lucide="trash-2" class="w-4 h-4"></i> Revoke & Delete Key
+      </button>
+    </div>
+  </aside>
+
+  <!-- Firebase Script & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // Your exact Firebase credentials
+const firebaseConfig = {
+  apiKey: "AIzaSyBo1BSDC-5om7ekOilj8QEH7OTbfRU0dY4",
+  authDomain: "openx-smartboard-352af.firebaseapp.com",
+  databaseURL: "https://openx-smartboard-352af-default-rtdb.firebaseio.com",
+  projectId: "openx-smartboard-352af",
+  storageBucket: "openx-smartboard-352af.firebasestorage.app",
+  messagingSenderId: "36487598722",
+  appId: "1:36487598722:web:05fb94e4b789c415d99a9b",
+  measurementId: "G-S9LQVHB153"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let crmUnsubscribe = null;
+    let globalKeysData = []; 
+    const LIFETIME_TIMESTAMP = 4000000000000; 
+
+    // --- AUTHENTICATION LOGIC ---
+    const authOverlay = document.getElementById('authOverlay');
+    const mainAppContent = document.getElementById('mainAppContent');
+    const loginError = document.getElementById('loginError');
+    const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+    const btnAdminLogout = document.getElementById('btnAdminLogout');
+    
+    // Check Auth State
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        btnGoogleLogin.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Verifying authorization...`;
+        
+        try {
+          // Check if this user's email exists in the "admins" collection
+          const adminDoc = await getDoc(doc(db, "admins", user.email));
+          
+          if (adminDoc.exists()) {
+            // Authorized Admin!
+            document.getElementById('adminEmailDisplay').innerText = user.email;
+            document.body.classList.remove('overflow-hidden');
+            authOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+              authOverlay.classList.add('hidden');
+              mainAppContent.classList.remove('hidden');
+              setTimeout(() => mainAppContent.classList.remove('opacity-0'), 50);
+            }, 300);
+            
+            // Start loading CRM data only after they are authenticated
+            initCrmRealtimeListener();
+          } else {
+            // Unauthorized
+            loginError.innerText = "Access Denied. Your email is not registered as an administrator.";
+            loginError.classList.remove('hidden');
+            await signOut(auth);
+            resetLoginBtn();
+          }
+        } catch (error) {
+          loginError.innerText = "Error verifying admin status: " + error.message;
+          loginError.classList.remove('hidden');
+          await signOut(auth);
+          resetLoginBtn();
+        }
+      } else {
+        // Not logged in
+        if (crmUnsubscribe) crmUnsubscribe(); // Stop listening to DB
+        document.body.classList.add('overflow-hidden');
+        authOverlay.classList.remove('hidden');
+        setTimeout(() => authOverlay.classList.remove('opacity-0'), 50);
+        mainAppContent.classList.add('hidden', 'opacity-0');
+        resetLoginBtn();
+      }
+    });
+
+    btnGoogleLogin.addEventListener('click', () => {
+      loginError.classList.add('hidden');
+      btnGoogleLogin.innerText = "Connecting to Google...";
+      signInWithPopup(auth, provider).catch(err => {
+        loginError.innerText = "Sign in failed: " + err.message;
+        loginError.classList.remove('hidden');
+        resetLoginBtn();
+      });
+    });
+
+    btnAdminLogout.addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    function resetLoginBtn() {
+      btnGoogleLogin.innerHTML = `
+        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign in with Google
+      `;
+    }
+
+    // --- END AUTHENTICATION LOGIC ---
+
+
+    function generateAppKey() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = 'OX-';
+      for (let i = 0; i < 12; i++) {
+        if (i > 0 && i % 4 === 0) result += '-';
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    window.openCreateModal = function() {
+      document.getElementById("createModalBackdrop").classList.remove("hidden");
+      document.getElementById("newStartDate").valueAsDate = new Date();
+    };
+
+    window.closeCreateModal = function() {
+      document.getElementById("createModalBackdrop").classList.add("hidden");
+      document.getElementById("createKeyForm").reset();
+    };
+
+    window.exportToCSV = function(targetBuyer = null) {
+      const dataToExport = targetBuyer 
+        ? globalKeysData.filter(k => k.buyerName === targetBuyer)
+        : globalKeysData;
+
+      if (dataToExport.length === 0) {
+        alert("No keys available to export.");
+        return;
+      }
+      
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Buyer Name,Buyer Email,License Key,Claimed By,Start Date,Expiration Date,Status\n";
+
+      dataToExport.forEach(row => {
+        const bName = `"${row.buyerName || 'Unknown'}"`;
+        const bEmail = `"${row.buyerEmail || 'N/A'}"`;
+        const claimed = `"${row.claimedByEmail || 'Unclaimed'}"`;
+        const start = row.startsAt ? new Date(row.startsAt).toLocaleDateString() : "Immediate";
+        const end = row.expiresAt >= LIFETIME_TIMESTAMP ? "Lifetime" : new Date(row.expiresAt).toLocaleDateString();
+        
+        const now = Date.now();
+        let status = "Active";
+        if (now < row.startsAt) status = "Pending";
+        else if (row.expiresAt < LIFETIME_TIMESTAMP && now > row.expiresAt) status = "Expired";
+
+        csvContent += `${bName},${bEmail},${row.activeCode},${claimed},${start},${end},${status}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      
+      const fileName = targetBuyer 
+        ? `OpenX_Keys_${targetBuyer.replace(/\s+/g, '_')}.csv` 
+        : `OpenX_All_Keys_${new Date().toISOString().slice(0,10)}.csv`;
+        
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    window.emailBuyer = function() {
+      if (!activeSelectedUser) return;
+      const bName = activeSelectedUser.buyerName || 'Client';
+      const bEmail = activeSelectedUser.buyerEmail;
+
+      if (!bEmail) {
+        alert("No contact email was saved for this buyer.");
+        return;
+      }
+
+      exportToCSV(bName);
+
+      const subject = encodeURIComponent(`Your OpenX Smartboard Access Keys - ${bName}`);
+      const body = encodeURIComponent(
+        `Hello ${bName},\n\n` +
+        `Thank you for your purchase. Please find your OpenX Smartboard access keys in the attached Excel/CSV file.\n\n` +
+        `Note: Each key is unique per device. The first person to log in using a key will permanently bind it to their account.\n\n` +
+        `Best regards,\nOpenX Team`
+      );
+      
+      window.location.href = `mailto:${bEmail}?subject=${subject}&body=${body}`;
+    };
+
+    document.getElementById('btnEmailBuyer').addEventListener('click', window.emailBuyer);
+
+    document.getElementById("createKeyForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const buyerName = document.getElementById("newBuyerName").value.trim();
+      const buyerEmail = document.getElementById("newBuyerEmail").value.trim();
+      const startDateStr = document.getElementById("newStartDate").value;
+      const endDateStr = document.getElementById("newEndDate").value;
+      const keyCount = parseInt(document.getElementById("keyCount").value) || 1;
+
+      const startTimestamp = new Date(startDateStr).getTime();
+      let endTimestamp = LIFETIME_TIMESTAMP; 
+
+      if (endDateStr) {
+        const d = new Date(endDateStr);
+        d.setHours(23, 59, 59, 999); 
+        endTimestamp = d.getTime();
+      }
+
+      if (endTimestamp <= startTimestamp) {
+        alert("End date must be after start date.");
+        return;
+      }
+
+      const generateBtn = e.target.querySelector('button[type="submit"]');
+      generateBtn.innerText = "Generating...";
+      generateBtn.disabled = true;
+
+      try {
+        for(let i = 0; i < keyCount; i++) {
+          const uid = "KEY_" + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+          const newKey = generateAppKey();
+
+          const newLicense = {
+            activeCode: newKey,
+            buyerName: buyerName,
+            buyerEmail: buyerEmail,
+            claimedByEmail: null,
+            currentDeviceId: null,
+            startsAt: startTimestamp,
+            expiresAt: endTimestamp,
+            createdAt: Date.now()
+          };
+
+          await setDoc(doc(db, "users", uid), newLicense);
+        }
+        closeCreateModal();
+      } catch (err) {
+        alert("Error generating keys: " + err.message);
+      } finally {
+        generateBtn.innerText = "Generate Keys";
+        generateBtn.disabled = false;
+      }
+    });
+
+    function initCrmRealtimeListener() {
+      const usersRef = collection(db, "users");
+
+      if (crmUnsubscribe) crmUnsubscribe();
+
+      crmUnsubscribe = onSnapshot(usersRef, (snapshot) => {
+        clearKanbanColumns();
+        let activeUsersCount = 0;
+        let counts = { leadIn: 0, activeTrial: 0, closedWon: 0, expired: 0 };
+        globalKeysData = []; 
+
+        snapshot.forEach((docSnap) => {
+          const user = docSnap.data();
+          const uid = docSnap.id;
+          globalKeysData.push(user); 
+
+          const now = Date.now();
+          const startsAt = user.startsAt || 0;
+          const expiresAt = user.expiresAt || 0;
+
+          const isPending = now < startsAt;
+          const isLifetime = expiresAt >= LIFETIME_TIMESTAMP;
+          const isExpired = !isPending && !isLifetime && now > expiresAt;
+
+          let stage = "leadIn";
+          if (isPending) stage = "leadIn";
+          else if (isLifetime) stage = "closedWon";
+          else if (isExpired) stage = "expired";
+          else stage = "activeTrial";
+
+          if (stage === "activeTrial" || stage === "closedWon") activeUsersCount++;
+          counts[stage]++;
+
+          renderUserCard(uid, user, stage, isLifetime, isExpired, isPending);
+        });
+
+        document.getElementById("statActiveUsers").innerText = activeUsersCount;
+        document.getElementById("statTotalUsers").innerText = snapshot.size;
+        
+        Object.keys(counts).forEach(key => {
+          const badge = document.getElementById(`count-${key}`);
+          if (badge) badge.innerText = counts[key];
+        });
+
+        lucide.createIcons();
+      });
+    }
+
+    let activeSelectedUid = null;
+    let activeSelectedUser = null;
+
+    function renderUserCard(uid, user, stage, isLifetime, isExpired, isPending) {
+      const targetColumn = document.getElementById(`column-${stage}`);
+      if (!targetColumn) return;
+
+      let timeText = "";
+      let badgeClass = "";
+
+      if (isPending) {
+        const daysUntil = Math.ceil((user.startsAt - Date.now()) / (1000 * 60 * 60 * 24));
+        timeText = `Starts in ${daysUntil}d`;
+        badgeClass = 'text-slate-400 bg-slate-800 border border-slate-700';
+      } else if (isLifetime) {
+        timeText = "Lifetime";
+        badgeClass = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20';
+      } else if (isExpired) {
+        timeText = "Expired";
+        badgeClass = 'text-rose-400 bg-rose-500/10 border border-rose-500/20';
+      } else {
+        const daysLeft = Math.ceil((user.expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
+        timeText = `${daysLeft}d left`;
+        badgeClass = 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
+      }
+
+      const claimStatus = user.claimedByEmail 
+        ? `<span class="text-emerald-400"><i data-lucide="user-check" class="w-3 h-3 inline"></i> Claimed</span>`
+        : `<span class="text-amber-400"><i data-lucide="unlock" class="w-3 h-3 inline"></i> Unclaimed</span>`;
+
+      const card = document.createElement("div");
+      card.className = "bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg p-4 cursor-pointer transition-all hover:border-slate-700 shadow-sm group";
+      card.onclick = () => openDrawer(user, timeText, uid);
+
+      card.innerHTML = `
+        <div class="flex items-start justify-between">
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded ${badgeClass}">${timeText}</span>
+          <div class="text-[10px] font-medium bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
+             ${claimStatus}
+          </div>
+        </div>
+        <div class="mt-3 text-sm font-mono text-white tracking-wider truncate">${user.activeCode || 'N/A'}</div>
+        <h4 class="font-medium text-xs text-slate-400 mt-2 truncate"><i data-lucide="building" class="w-3 h-3 inline mr-1"></i>${user.buyerName || 'Unknown Buyer'}</h4>
+      `;
+
+      targetColumn.appendChild(card);
+    }
+
+    function clearKanbanColumns() {
+      ["column-leadIn", "column-activeTrial", "column-closedWon", "column-expired"].forEach(id => {
+        const col = document.getElementById(id);
+        if (col) col.innerHTML = "";
+      });
+    }
+
+    window.openDrawer = function(user, statusText, uid) {
+      activeSelectedUid = uid;
+      activeSelectedUser = user;
+      
+      const startDateStr = user.startsAt ? new Date(user.startsAt).toLocaleDateString() : 'Immediate';
+
+      document.getElementById("drawerBuyerName").innerText = user.buyerName || 'Unknown Buyer';
+      document.getElementById("drawerBuyerEmail").innerText = user.buyerEmail || 'No Email Provided';
+
+      document.getElementById("drawerEmail").innerHTML = user.claimedByEmail 
+        ? `<span class="text-emerald-400">${user.claimedByEmail}</span>` 
+        : '<span class="text-amber-500 italic">Unclaimed (Available)</span>';
+      
+      document.getElementById("drawerCode").innerText = user.activeCode || 'N/A';
+      document.getElementById("drawerStatus").innerText = statusText;
+      document.getElementById("drawerStartDate").innerText = startDateStr;
+
+      document.getElementById("drawerBackdrop").classList.remove("hidden");
+      document.getElementById("drawer").classList.remove("translate-x-full");
+    };
+
+    window.closeDrawer = function() {
+      activeSelectedUid = null;
+      activeSelectedUser = null;
+      document.getElementById("drawerBackdrop").classList.add("hidden");
+      document.getElementById("drawer").classList.add("translate-x-full");
+    };
+
+    async function resetClaim() {
+      if (!activeSelectedUid) return;
+      if (confirm("Are you sure you want to unbind this key? The previous user will be locked out until they provide a new key.")) {
+        try {
+          const userRef = doc(db, "users", activeSelectedUid);
+          await updateDoc(userRef, { claimedByEmail: null, currentDeviceId: null });
+          closeDrawer();
+        } catch (err) {
+          alert("Error resetting key claim: " + err.message);
+        }
+      }
+    }
+
+    async function extendUserTrial(additionalDays) {
+      if (!activeSelectedUid || !activeSelectedUser) return;
+      try {
+        const userRef = doc(db, "users", activeSelectedUid);
+        let currentEnd = activeSelectedUser.expiresAt || Date.now();
+        
+        if (currentEnd < Date.now()) currentEnd = Date.now();
+
+        const newExpiresAt = additionalDays === 'lifetime' 
+          ? LIFETIME_TIMESTAMP 
+          : currentEnd + (additionalDays * 24 * 60 * 60 * 1000);
+
+        await updateDoc(userRef, { expiresAt: newExpiresAt });
+        closeDrawer();
+      } catch (err) {
+        alert("Error updating user: " + err.message);
+      }
+    }
+
+    async function revokeAccess() {
+      if (!activeSelectedUid) return;
+      if (confirm("Are you sure you want to completely delete and revoke this access key?")) {
+        try {
+          await deleteDoc(doc(db, "users", activeSelectedUid));
+          closeDrawer();
+        } catch (err) {
+          alert("Error revoking user: " + err.message);
+        }
+      }
+    }
+
+    document.getElementById("btnResetClaim").addEventListener("click", resetClaim);
+    document.getElementById("btnExtend7").addEventListener("click", () => extendUserTrial(7));
+    document.getElementById("btnExtend30").addEventListener("click", () => extendUserTrial(30));
+    document.getElementById("btnLifetime").addEventListener("click", () => extendUserTrial('lifetime'));
+    document.getElementById("btnRevoke").addEventListener("click", revokeAccess);
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>
