@@ -14,6 +14,12 @@
     /* Custom scrollbar for mobile kanban */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Premium Metallic Card Background[span_0](start_span)[span_0](end_span) */
+    .metallic-card {
+      background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), inset 0 20px 50px rgba(255,255,255,0.03), 0 20px 40px -10px rgba(0,0,0,0.7);
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col overflow-hidden">
@@ -202,51 +208,44 @@
 
       <div class="mt-4 md:mt-6 space-y-4">
         
-        <!-- Visible Profile Card Preview (Mirrors Reference Image Structure & Styling) -->
+        <!-- Visible Profile Card Preview[span_1](start_span)[span_1](end_span) -->
         <div class="mb-2">
           <label class="text-xs text-slate-500 uppercase font-semibold mb-2 block">Card Preview & Export</label>
           
-          <div class="w-full max-w-[400px] mx-auto">
-            <div id="cardExportTarget" class="w-full relative rounded-[18px] p-6 shadow-2xl flex flex-col justify-between text-white font-sans border border-slate-600/30 overflow-hidden" 
-                 style="background: linear-gradient(135deg, #2b3245 0%, #151822 50%, #0d0f17 100%); aspect-ratio: 1.586/1; box-shadow: inset 0 1px 2px rgba(255,255,255,0.15), 0 20px 40px rgba(0,0,0,0.6);">
-                
-                <!-- Premium Metallic Overlay -->
-                <div class="absolute inset-0 pointer-events-none rounded-[18px]" style="background: radial-gradient(circle at top left, rgba(255,255,255,0.1) 0%, transparent 45%); mix-blend-mode: overlay;"></div>
-                
-                <!-- Top Row[span_1](start_span)[span_1](end_span) -->
-                <div class="flex justify-between items-start relative z-10">
-                    <div class="flex flex-col">
-                        <!-- Proper spacing & sizing to avoid overlapping[span_2](start_span)[span_2](end_span) -->
-                        <h1 class="text-[28px] font-extrabold tracking-tight text-white mb-0" style="line-height: 1;">OpenX</h1>
-                        <p class="text-[8px] tracking-[0.3em] font-bold text-slate-300 uppercase mt-[2px]">Smart Board</p>
-                    </div>
-                    <!-- Gold Chip[span_3](start_span)[span_3](end_span) -->
-                    <div class="w-[48px] h-[34px] rounded-[6px] shadow-sm border border-yellow-300/30" style="background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #854d0e 100%);"></div>
-                </div>
-                
-                <!-- Middle Row[span_4](start_span)[span_4](end_span) -->
-                <div class="mt-auto mb-5 relative z-10">
-                    <p class="text-[8px] text-slate-400/80 uppercase tracking-[0.15em] mb-1 font-semibold">Profile Number</p>
-                    <p class="text-[20px] sm:text-[22px] text-white font-mono tracking-widest font-semibold uppercase whitespace-nowrap" id="cardCode">OX CC2T UHZP ODMS</p>
-                </div>
+          <div id="cardExportTarget" class="w-full rounded-[14px] p-6 flex flex-col justify-between text-white font-sans border border-slate-700/50 metallic-card relative overflow-hidden" style="aspect-ratio: 1.586/1;">
+              <!-- Top Row: Logo & Chip -->
+              <div class="flex justify-between items-start">
+                  <!-- Tight spacing between OpenX and SMART BOARD[span_2](start_span)[span_2](end_span) -->
+                  <div class="flex flex-col leading-none">
+                      <h1 class="text-3xl font-bold tracking-tight text-white mb-0" style="font-family: ui-sans-serif, system-ui, sans-serif;">OpenX</h1>
+                      <p class="text-[7.5px] tracking-[0.25em] font-bold text-slate-300 uppercase relative -top-0.5" style="font-family: ui-sans-serif, system-ui, sans-serif;">SMART BOARD</p>
+                  </div>
+                  <!-- Metallic Gold Chip -->
+                  <div class="w-12 h-9 rounded-[4px] shadow-sm border border-yellow-300/30" style="background: linear-gradient(135deg, #fce16d 0%, #d4a017 100%);"></div>
+              </div>
+              
+              <!-- Middle Row: Profile Number -->
+              <div class="mt-auto mb-4">
+                  <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1.5 font-semibold">Profile Number</p>
+                  <p class="text-xl text-slate-100 tracking-[0.15em] font-bold uppercase" id="cardCode" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">OX CC2T UHZP ODMS</p>
+              </div>
 
-                <!-- Bottom Row[span_5](start_span)[span_5](end_span) -->
-                <div class="flex justify-between items-end relative z-10 pb-1">
-                    <div class="flex-1 pr-2 overflow-hidden">
-                        <p class="text-[8px] text-slate-400/80 uppercase tracking-[0.15em] mb-1 font-semibold">Card Holder</p>
-                        <!-- Truncate ensures no text wrapping or vertical cutoff -->
-                        <p class="text-[13px] text-white font-bold uppercase truncate leading-tight" id="cardBuyer">AKA</p>
-                    </div>
-                    <div class="text-left pr-6 whitespace-nowrap" id="cardStartContainer">
-                        <p class="text-[8px] text-slate-400/80 uppercase tracking-[0.15em] mb-1 font-semibold">Start Date</p>
-                        <p class="text-[13px] text-white font-bold uppercase leading-tight" id="cardStart">08/26</p>
-                    </div>
-                    <div class="text-right whitespace-nowrap transition-opacity duration-200" id="cardExpiryContainer">
-                        <p class="text-[8px] text-slate-400/80 uppercase tracking-[0.15em] mb-1 font-semibold">Expires</p>
-                        <p class="text-[13px] text-white font-bold uppercase leading-tight" id="cardExpiry">LIFETIME</p>
-                    </div>
-                </div>
-            </div>
+              <!-- Bottom Row: Card Holder, Start Date, Expires[span_3](start_span)[span_3](end_span) -->
+              <!-- Added padding-bottom to prevent text from cutting off at the bottom -->
+              <div class="flex justify-between items-end pb-1">
+                  <div class="flex-1 pr-2">
+                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
+                      <p class="text-sm text-white font-bold uppercase truncate leading-tight" id="cardBuyer">OFFICE</p>
+                  </div>
+                  <div class="text-left pr-4" id="cardStartContainer">
+                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Start Date</p>
+                      <p class="text-sm text-white font-bold uppercase leading-tight" id="cardStart">08/26</p>
+                  </div>
+                  <div class="text-right transition-opacity duration-200" id="cardExpiryContainer">
+                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
+                      <p class="text-sm text-white font-bold uppercase leading-tight" id="cardExpiry">LIFETIME</p>
+                  </div>
+              </div>
           </div>
           
           <!-- Sharing Controls -->
@@ -410,14 +409,14 @@
       `;
     }
 
-    // Adjusted generation to natively produce groups of 4 (e.g. OX-ABCD-EFGH-IJKL)[span_6](start_span)[span_6](end_span)
     function generateAppKey() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let result = '';
-      for (let i = 0; i < 12; i++) {
+      let result = 'OX';
+      for (let i = 0; i < 14; i++) {
+        if (i % 4 === 0) result += '-';
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      return `OX-${result.slice(0,4)}-${result.slice(4,8)}-${result.slice(8,12)}`;
+      return result;
     }
 
     window.openCreateModal = function() {
@@ -681,6 +680,7 @@
       activeSelectedUid = uid;
       activeSelectedUser = user;
 
+      // Populate traditional data
       document.getElementById("drawerBuyerName").innerText = user.buyerName || 'Unknown Buyer';
       document.getElementById("drawerBuyerEmail").innerText = user.buyerEmail || 'No Email Provided';
       document.getElementById("drawerEmail").innerHTML = user.claimedByEmail 
@@ -691,9 +691,9 @@
       // --- POPULATE VISUAL CARD PREVIEW ---
       document.getElementById('cardBuyer').innerText = user.buyerName || 'Client';
       
-      // Replaces hyphens with spaces to match reference formatting exactly: "OX ABCD EFGH IJKL[span_7](start_span)"[span_7](end_span)
+      // Group the activation code into chunks separated by spaces[span_4](start_span)[span_4](end_span)
       let rawCode = user.activeCode || 'N/A';
-      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' ');
+      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' '); 
       
       const startD = user.startsAt ? new Date(user.startsAt) : new Date();
       document.getElementById('cardStart').innerText = `${String(startD.getMonth()+1).padStart(2,'0')}/${String(startD.getFullYear()).slice(-2)}`;
@@ -743,10 +743,9 @@
       lucide.createIcons();
 
       try {
-        // High resolution generation setting scale to 4[span_8](start_span)[span_8](end_span)
         const canvas = await html2canvas(cardEl, { 
           backgroundColor: null, 
-          scale: 4, 
+          scale: 3, 
           logging: false 
         });
 
