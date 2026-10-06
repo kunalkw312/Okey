@@ -14,12 +14,6 @@
     /* Custom scrollbar for mobile kanban */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Premium Metallic Card Background[span_0](start_span)[span_0](end_span) */
-    .metallic-card {
-      background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), inset 0 20px 50px rgba(255,255,255,0.03), 0 20px 40px -10px rgba(0,0,0,0.7);
-    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col overflow-hidden">
@@ -141,7 +135,7 @@
     <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-4 md:p-6 border-b border-slate-800 flex items-center justify-between shrink-0">
         <h3 class="text-lg font-semibold text-white">Generate App Keys</h3>
-        <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white transition-colors p-2 -mr-2">
+        <button type="button" onclick="closeCreateModal()" class="text-slate-400 hover:text-white transition-colors p-2 -mr-2">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -176,15 +170,14 @@
             <input type="date" id="newStartDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" style="color-scheme: dark;">
           </div>
           <div>
-            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">End Date</label>
-            <input type="date" id="newEndDate" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" style="color-scheme: dark;">
-            <p class="text-[10px] text-slate-500 mt-1">Leave empty for Lifetime</p>
+            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Duration (Days)</label>
+            <input type="number" id="newDuration" placeholder="e.g. 7" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+            <p class="text-[10px] text-slate-500 mt-1">Leave empty for Lifetime. Timer starts upon first claim.</p>
           </div>
         </div>
         <div>
           <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Number of Keys to Generate</label>
           <input type="number" id="keyCount" min="1" max="50" value="1" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
-          <p class="text-[10px] text-slate-500 mt-1">1 key = 1 device. Generate multiple for multi-device clients.</p>
         </div>
         
         <div class="pt-2 flex gap-3 shrink-0">
@@ -208,42 +201,39 @@
 
       <div class="mt-4 md:mt-6 space-y-4">
         
-        <!-- Visible Profile Card Preview[span_1](start_span)[span_1](end_span) -->
+        <!-- VISIBLE PROFILE CARD PREVIEW (Matches reference completely) -->
         <div class="mb-2">
           <label class="text-xs text-slate-500 uppercase font-semibold mb-2 block">Card Preview & Export</label>
           
-          <div id="cardExportTarget" class="w-full rounded-[14px] p-6 flex flex-col justify-between text-white font-sans border border-slate-700/50 metallic-card relative overflow-hidden" style="aspect-ratio: 1.586/1;">
-              <!-- Top Row: Logo & Chip -->
+          <div id="cardExportTarget" class="w-full rounded-[16px] p-6 shadow-2xl flex flex-col justify-between text-white font-sans relative overflow-hidden" 
+               style="background: linear-gradient(135deg, #242b3d 0%, #161b26 50%, #0a0d14 100%); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5); aspect-ratio: 1.586/1;">
+              
+              <!-- Top Row -->
               <div class="flex justify-between items-start">
-                  <!-- Tight spacing between OpenX and SMART BOARD[span_2](start_span)[span_2](end_span) -->
-                  <div class="flex flex-col leading-none">
-                      <h1 class="text-3xl font-bold tracking-tight text-white mb-0" style="font-family: ui-sans-serif, system-ui, sans-serif;">OpenX</h1>
-                      <p class="text-[7.5px] tracking-[0.25em] font-bold text-slate-300 uppercase relative -top-0.5" style="font-family: ui-sans-serif, system-ui, sans-serif;">SMART BOARD</p>
+                  <div class="relative inline-block">
+                      <h1 class="text-[34px] md:text-[40px] font-bold tracking-tighter text-white leading-none m-0">OpenX</h1>
+                      <!-- Absolute position tucked tight under OpenX -->
+                      <p class="text-[8px] md:text-[10px] tracking-[0.38em] font-bold text-slate-300 uppercase absolute -bottom-2.5 left-0 whitespace-nowrap">Smart Board</p>
                   </div>
-                  <!-- Metallic Gold Chip -->
-                  <div class="w-12 h-9 rounded-[4px] shadow-sm border border-yellow-300/30" style="background: linear-gradient(135deg, #fce16d 0%, #d4a017 100%);"></div>
+                  <!-- Gold Chip -->
+                  <div class="w-12 h-9 rounded-md opacity-90 shadow-sm border border-yellow-400/30" style="background: linear-gradient(135deg, #fce76c 0%, #d4af37 50%, #aa7c11 100%);"></div>
               </div>
               
-              <!-- Middle Row: Profile Number -->
-              <div class="mt-auto mb-4">
+              <!-- Middle Row -->
+              <div class="mt-auto mb-5">
                   <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1.5 font-semibold">Profile Number</p>
-                  <p class="text-xl text-slate-100 tracking-[0.15em] font-bold uppercase" id="cardCode" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">OX CC2T UHZP ODMS</p>
+                  <p class="text-xl md:text-2xl text-slate-50 font-mono tracking-widest font-bold uppercase drop-shadow-sm" id="cardCode">OX CC2T UHZP ODMS</p>
               </div>
 
-              <!-- Bottom Row: Card Holder, Start Date, Expires[span_3](start_span)[span_3](end_span) -->
-              <!-- Added padding-bottom to prevent text from cutting off at the bottom -->
+              <!-- Bottom Row (Start Date removed entirely) -->
               <div class="flex justify-between items-end pb-1">
-                  <div class="flex-1 pr-2">
-                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
-                      <p class="text-sm text-white font-bold uppercase truncate leading-tight" id="cardBuyer">OFFICE</p>
-                  </div>
-                  <div class="text-left pr-4" id="cardStartContainer">
-                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Start Date</p>
-                      <p class="text-sm text-white font-bold uppercase leading-tight" id="cardStart">08/26</p>
+                  <div class="flex-1 pr-4">
+                      <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
+                      <p class="text-lg md:text-xl text-white font-bold uppercase truncate leading-tight" id="cardBuyer">OFFICE</p>
                   </div>
                   <div class="text-right transition-opacity duration-200" id="cardExpiryContainer">
-                      <p class="text-[8px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
-                      <p class="text-sm text-white font-bold uppercase leading-tight" id="cardExpiry">LIFETIME</p>
+                      <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
+                      <p class="text-lg md:text-xl text-white font-bold uppercase leading-tight" id="cardExpiry">LIFETIME</p>
                   </div>
               </div>
           </div>
@@ -338,12 +328,20 @@
     let globalKeysData = []; 
     const LIFETIME_TIMESTAMP = 4000000000000; 
 
+    // Helper to get active expiry date based on claim status
+    function getCalculatedExpiresAt(user) {
+        if (user.expiresAt) return user.expiresAt;
+        if (user.claimedAt && user.durationDays && user.durationDays !== 'lifetime') {
+            return user.claimedAt + (user.durationDays * 24 * 60 * 60 * 1000);
+        }
+        return null;
+    }
+
     // --- AUTHENTICATION LOGIC ---
     const authOverlay = document.getElementById('authOverlay');
     const mainAppContent = document.getElementById('mainAppContent');
     const loginError = document.getElementById('loginError');
     const btnGoogleLogin = document.getElementById('btnGoogleLogin');
-    const btnAdminLogout = document.getElementById('btnAdminLogout');
     
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -393,9 +391,7 @@
       });
     });
 
-    btnAdminLogout.addEventListener('click', () => {
-      signOut(auth);
-    });
+    document.getElementById('btnAdminLogout').addEventListener('click', () => signOut(auth));
 
     function resetLoginBtn() {
       btnGoogleLogin.innerHTML = `
@@ -413,7 +409,7 @@
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = 'OX';
       for (let i = 0; i < 14; i++) {
-        if (i % 4 === 0) result += '-';
+        if (i > 0 && i % 4 === 0) result += '-';
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
@@ -430,64 +426,46 @@
     };
 
     window.setPreset = function(type) {
-      const startInput = document.getElementById("newStartDate");
-      const endInput = document.getElementById("newEndDate");
-      let startDate = new Date(startInput.value);
-      if (isNaN(startDate)) {
-        startDate = new Date();
-        startInput.valueAsDate = startDate;
-      }
-
-      if (type === '7days') {
-        const end = new Date(startDate);
-        end.setDate(end.getDate() + 7);
-        endInput.valueAsDate = end;
-      } else if (type === '30days') {
-        const end = new Date(startDate);
-        end.setDate(end.getDate() + 30);
-        endInput.valueAsDate = end;
-      } else if (type === 'lifetime') {
-        endInput.value = '';
-      }
+      const durInput = document.getElementById("newDuration");
+      if (type === '7days') durInput.value = 7;
+      else if (type === '30days') durInput.value = 30;
+      else if (type === 'lifetime') durInput.value = '';
     };
 
     window.exportToCSV = function(targetBuyer = null) {
-      const dataToExport = targetBuyer 
-        ? globalKeysData.filter(k => k.buyerName === targetBuyer)
-        : globalKeysData;
-
-      if (dataToExport.length === 0) {
-        alert("No keys available to export.");
-        return;
-      }
+      const dataToExport = targetBuyer ? globalKeysData.filter(k => k.buyerName === targetBuyer) : globalKeysData;
+      if (dataToExport.length === 0) { alert("No keys available to export."); return; }
       
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Buyer Name,Buyer Email,License Key,Claimed By,Start Date,Expiration Date,Status\n";
+      let csvContent = "data:text/csv;charset=utf-8,Buyer Name,Buyer Email,License Key,Claimed By,Duration,Expiration Date,Status\n";
 
       dataToExport.forEach(row => {
         const bName = `"${row.buyerName || 'Unknown'}"`;
         const bEmail = `"${row.buyerEmail || 'N/A'}"`;
         const claimed = `"${row.claimedByEmail || 'Unclaimed'}"`;
-        const start = row.startsAt ? new Date(row.startsAt).toLocaleDateString() : "Immediate";
-        const end = row.expiresAt >= LIFETIME_TIMESTAMP ? "Lifetime" : new Date(row.expiresAt).toLocaleDateString();
+        const duration = row.durationDays === 'lifetime' ? 'Lifetime' : `${row.durationDays} Days`;
         
-        const now = Date.now();
-        let status = "Active";
-        if (now < row.startsAt) status = "Pending";
-        else if (row.expiresAt < LIFETIME_TIMESTAMP && now > row.expiresAt) status = "Expired";
+        let end = "Pending Claim";
+        let status = "Active (Unclaimed)";
+        
+        if (row.claimedByEmail) {
+           let exp = getCalculatedExpiresAt(row);
+           if (row.durationDays === 'lifetime' || exp >= LIFETIME_TIMESTAMP) {
+               end = "Lifetime";
+               status = "Lifetime Access";
+           } else if (exp) {
+               end = new Date(exp).toLocaleDateString();
+               if (Date.now() > exp) status = "Expired";
+               else status = "Active Claimed";
+           }
+        }
 
-        csvContent += `${bName},${bEmail},${row.activeCode},${claimed},${start},${end},${status}\n`;
+        csvContent += `${bName},${bEmail},${row.activeCode},${claimed},${duration},${end},${status}\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      
-      const fileName = targetBuyer 
-        ? `OpenX_Keys_${targetBuyer.replace(/\s+/g, '_')}.csv` 
-        : `OpenX_All_Keys_${new Date().toISOString().slice(0,10)}.csv`;
-        
-      link.setAttribute("download", fileName);
+      link.setAttribute("download", targetBuyer ? `OpenX_Keys_${targetBuyer.replace(/\s+/g, '_')}.csv` : `OpenX_All_Keys_${new Date().toISOString().slice(0,10)}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -498,24 +476,19 @@
       const bName = activeSelectedUser.buyerName || 'Client';
       const bEmail = activeSelectedUser.buyerEmail;
 
-      if (!bEmail) {
-        alert("No contact email was saved for this buyer.");
-        return;
-      }
-
+      if (!bEmail) { alert("No contact email was saved for this buyer."); return; }
       exportToCSV(bName);
 
       const subject = encodeURIComponent(`Your OpenX Smartboard Access Keys - ${bName}`);
       const body = encodeURIComponent(
         `Hello ${bName},\n\n` +
         `Thank you for your purchase. Please find your OpenX Smartboard access keys in the attached Excel/CSV file.\n\n` +
-        `Note: Each key is unique per device. The first person to log in using a key will permanently bind it to their account.\n\n` +
+        `Note: Each key is unique per device. The timer on your access pass only begins ticking down on the exact day it is claimed.\n\n` +
         `Best regards,\nOpenX Team`
       );
       
       window.location.href = `mailto:${bEmail}?subject=${subject}&body=${body}`;
     };
-
     document.getElementById('btnEmailBuyer').addEventListener('click', window.emailBuyer);
 
     document.getElementById("createKeyForm").addEventListener("submit", async (e) => {
@@ -524,22 +497,11 @@
       const buyerName = document.getElementById("newBuyerName").value.trim();
       const buyerEmail = document.getElementById("newBuyerEmail").value.trim();
       const startDateStr = document.getElementById("newStartDate").value;
-      const endDateStr = document.getElementById("newEndDate").value;
+      const durationVal = document.getElementById("newDuration").value;
       const keyCount = parseInt(document.getElementById("keyCount").value) || 1;
 
       const startTimestamp = new Date(startDateStr).getTime();
-      let endTimestamp = LIFETIME_TIMESTAMP; 
-
-      if (endDateStr) {
-        const d = new Date(endDateStr);
-        d.setHours(23, 59, 59, 999); 
-        endTimestamp = d.getTime();
-      }
-
-      if (endTimestamp <= startTimestamp) {
-        alert("End date must be after start date.");
-        return;
-      }
+      const durationDays = durationVal ? parseInt(durationVal) : 'lifetime';
 
       const generateBtn = e.target.querySelector('button[type="submit"]');
       generateBtn.innerText = "Generating...";
@@ -555,12 +517,13 @@
             buyerName: buyerName,
             buyerEmail: buyerEmail,
             claimedByEmail: null,
+            claimedAt: null, 
             currentDeviceId: null,
             startsAt: startTimestamp,
-            expiresAt: endTimestamp,
+            durationDays: durationDays,
+            expiresAt: durationDays === 'lifetime' ? LIFETIME_TIMESTAMP : null, // Timer starts when claimed
             createdAt: Date.now()
           };
-
           await setDoc(doc(db, "users", uid), newLicense);
         }
         closeCreateModal();
@@ -574,7 +537,6 @@
 
     function initCrmRealtimeListener() {
       const usersRef = collection(db, "users");
-
       if (crmUnsubscribe) crmUnsubscribe();
 
       crmUnsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -590,14 +552,17 @@
 
           const now = Date.now();
           const startsAt = user.startsAt || 0;
-          const expiresAt = user.expiresAt || 0;
-
-          const isPending = now < startsAt;
-          const isLifetime = expiresAt >= LIFETIME_TIMESTAMP;
-          const isExpired = !isPending && !isLifetime && now > expiresAt;
+          
+          let isLifetime = user.durationDays === 'lifetime' || (user.expiresAt && user.expiresAt >= LIFETIME_TIMESTAMP);
+          let activeExpiresAt = getCalculatedExpiresAt(user);
+          let isExpired = false;
+          
+          if (user.claimedByEmail && !isLifetime && activeExpiresAt && now > activeExpiresAt) {
+             isExpired = true;
+          }
 
           let stage = "leadIn";
-          if (isPending) stage = "leadIn";
+          if (now < startsAt) stage = "leadIn";
           else if (isLifetime) stage = "closedWon";
           else if (isExpired) stage = "expired";
           else stage = "activeTrial";
@@ -605,7 +570,7 @@
           if (stage === "activeTrial" || stage === "closedWon") activeUsersCount++;
           counts[stage]++;
 
-          renderUserCard(uid, user, stage, isLifetime, isExpired, isPending);
+          renderUserCard(uid, user, stage, isLifetime, isExpired, (now < startsAt), activeExpiresAt);
         });
 
         document.getElementById("statActiveUsers").innerText = activeUsersCount;
@@ -623,15 +588,16 @@
     let activeSelectedUid = null;
     let activeSelectedUser = null;
 
-    function renderUserCard(uid, user, stage, isLifetime, isExpired, isPending) {
+    function renderUserCard(uid, user, stage, isLifetime, isExpired, isPending, activeExpiresAt) {
       const targetColumn = document.getElementById(`column-${stage}`);
       if (!targetColumn) return;
 
       let timeText = "";
       let badgeClass = "";
+      const now = Date.now();
 
       if (isPending) {
-        const daysUntil = Math.ceil((user.startsAt - Date.now()) / (1000 * 60 * 60 * 24));
+        const daysUntil = Math.ceil((user.startsAt - now) / 86400000);
         timeText = `Starts in ${daysUntil}d`;
         badgeClass = 'text-slate-400 bg-slate-800 border border-slate-700';
       } else if (isLifetime) {
@@ -641,9 +607,14 @@
         timeText = "Expired";
         badgeClass = 'text-rose-400 bg-rose-500/10 border border-rose-500/20';
       } else {
-        const daysLeft = Math.ceil((user.expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
-        timeText = `${daysLeft}d left`;
-        badgeClass = 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
+        if (!user.claimedByEmail) {
+            timeText = `${user.durationDays || '?'}d (Unclaimed)`;
+            badgeClass = 'text-amber-400 bg-amber-500/10 border border-amber-500/20';
+        } else {
+            let daysLeft = activeExpiresAt ? Math.ceil((activeExpiresAt - now) / 86400000) : '?';
+            timeText = `${daysLeft}d left`;
+            badgeClass = 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
+        }
       }
 
       const claimStatus = user.claimedByEmail 
@@ -680,7 +651,7 @@
       activeSelectedUid = uid;
       activeSelectedUser = user;
 
-      // Populate traditional data
+      // Drawer data
       document.getElementById("drawerBuyerName").innerText = user.buyerName || 'Unknown Buyer';
       document.getElementById("drawerBuyerEmail").innerText = user.buyerEmail || 'No Email Provided';
       document.getElementById("drawerEmail").innerHTML = user.claimedByEmail 
@@ -691,22 +662,27 @@
       // --- POPULATE VISUAL CARD PREVIEW ---
       document.getElementById('cardBuyer').innerText = user.buyerName || 'Client';
       
-      // Group the activation code into chunks separated by spaces[span_4](start_span)[span_4](end_span)
+      // Spaced format (e.g. OX CC2T UHZP ODMS)[span_4](start_span)[span_4](end_span)
       let rawCode = user.activeCode || 'N/A';
       document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' '); 
-      
-      const startD = user.startsAt ? new Date(user.startsAt) : new Date();
-      document.getElementById('cardStart').innerText = `${String(startD.getMonth()+1).padStart(2,'0')}/${String(startD.getFullYear()).slice(-2)}`;
 
+      // Render Expiry
       const expiryContainer = document.getElementById('cardExpiryContainer');
-      if (user.expiresAt >= LIFETIME_TIMESTAMP) {
+      let isLifetime = user.durationDays === 'lifetime' || (user.expiresAt && user.expiresAt >= LIFETIME_TIMESTAMP);
+      
+      if (isLifetime) {
          document.getElementById('cardExpiry').innerText = "LIFETIME";
       } else {
-         const endD = new Date(user.expiresAt);
-         document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
+         let activeExp = getCalculatedExpiresAt(user);
+         if (activeExp) {
+             const endD = new Date(activeExp);
+             document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
+         } else {
+             // Not claimed yet, show duration
+             document.getElementById('cardExpiry').innerText = `${user.durationDays || '?'} DAYS`;
+         }
       }
 
-      // Reset toggle
       document.getElementById('hideExpiryToggle').checked = false;
       expiryContainer.style.opacity = '1';
 
@@ -721,14 +697,8 @@
       document.getElementById("drawer").classList.add("translate-x-full");
     };
 
-    // Toggle Expiry Date Realtime
     document.getElementById('hideExpiryToggle').addEventListener('change', function() {
-      const expiryContainer = document.getElementById('cardExpiryContainer');
-      if (this.checked) {
-        expiryContainer.style.opacity = '0';
-      } else {
-        expiryContainer.style.opacity = '1';
-      }
+      document.getElementById('cardExpiryContainer').style.opacity = this.checked ? '0' : '1';
     });
 
     // --- SHARE PROFILE CARD IMAGE ---
@@ -743,12 +713,7 @@
       lucide.createIcons();
 
       try {
-        const canvas = await html2canvas(cardEl, { 
-          backgroundColor: null, 
-          scale: 3, 
-          logging: false 
-        });
-
+        const canvas = await html2canvas(cardEl, { backgroundColor: null, scale: 3, logging: false });
         canvas.toBlob(async (blob) => {
           const file = new File([blob], `OpenX_Key_${activeSelectedUser.activeCode}.png`, { type: "image/png" });
           
@@ -759,20 +724,14 @@
                 text: 'Here is your OpenX Smart Board Profile Card.',
                 files: [file]
               });
-            } catch (err) {
-              console.log("Share API fall-through to download.", err);
-              triggerDownload(file);
-            }
+            } catch (err) { triggerDownload(file); }
           } else {
             triggerDownload(file);
           }
-
           btnShare.innerHTML = origHtml;
           lucide.createIcons();
         });
-
       } catch (err) {
-        console.error("Error generating shareable card:", err);
         alert("Failed to generate image card.");
         btnShare.innerHTML = origHtml;
         lucide.createIcons();
@@ -796,11 +755,9 @@
       if (confirm("Are you sure you want to unbind this key? The previous user will be locked out until they provide a new key.")) {
         try {
           const userRef = doc(db, "users", activeSelectedUid);
-          await updateDoc(userRef, { claimedByEmail: null, currentDeviceId: null });
+          await updateDoc(userRef, { claimedByEmail: null, currentDeviceId: null, claimedAt: null });
           closeDrawer();
-        } catch (err) {
-          alert("Error resetting key claim: " + err.message);
-        }
+        } catch (err) { alert("Error resetting key claim: " + err.message); }
       }
     }
 
@@ -808,19 +765,26 @@
       if (!activeSelectedUid || !activeSelectedUser) return;
       try {
         const userRef = doc(db, "users", activeSelectedUid);
-        let currentEnd = activeSelectedUser.expiresAt || Date.now();
-        
-        if (currentEnd < Date.now()) currentEnd = Date.now();
+        const updates = {};
 
-        const newExpiresAt = additionalDays === 'lifetime' 
-          ? LIFETIME_TIMESTAMP 
-          : currentEnd + (additionalDays * 24 * 60 * 60 * 1000);
-
-        await updateDoc(userRef, { expiresAt: newExpiresAt });
+        if (additionalDays === 'lifetime') {
+            updates.durationDays = 'lifetime';
+            updates.expiresAt = LIFETIME_TIMESTAMP;
+        } else {
+            if (activeSelectedUser.claimedByEmail) {
+                // Extending an actively claimed key
+                let currentEnd = getCalculatedExpiresAt(activeSelectedUser) || Date.now();
+                if (currentEnd < Date.now()) currentEnd = Date.now();
+                updates.expiresAt = currentEnd + (additionalDays * 24 * 60 * 60 * 1000);
+            } else {
+                // Extending an unclaimed key (Timer hasn't started)
+                let currentDur = activeSelectedUser.durationDays === 'lifetime' ? 0 : (activeSelectedUser.durationDays || 0);
+                updates.durationDays = currentDur + additionalDays;
+            }
+        }
+        await updateDoc(userRef, updates);
         closeDrawer();
-      } catch (err) {
-        alert("Error updating user: " + err.message);
-      }
+      } catch (err) { alert("Error updating user: " + err.message); }
     }
 
     async function revokeAccess() {
@@ -829,9 +793,7 @@
         try {
           await deleteDoc(doc(db, "users", activeSelectedUid));
           closeDrawer();
-        } catch (err) {
-          alert("Error revoking user: " + err.message);
-        }
+        } catch (err) { alert("Error revoking user: " + err.message); }
       }
     }
 
