@@ -92,10 +92,9 @@
       </div>
     </div>
 
-    <!-- Kanban Pipeline Board (Horizontal scroll on mobile) -->
+    <!-- Kanban Pipeline Board -->
     <div class="flex md:grid md:grid-cols-4 gap-4 items-start pb-10 overflow-x-auto snap-x snap-mandatory hide-scrollbar">
       
-      <!-- Column 1: Scheduled / Pending Start -->
       <div class="min-w-[85vw] md:min-w-0 snap-center bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[600px] md:h-[650px] shrink-0">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-semibold text-sm text-slate-300">Pending Start</h3>
@@ -104,7 +103,6 @@
         <div id="column-leadIn" class="flex-1 overflow-y-auto space-y-3 pr-1 hide-scrollbar"></div>
       </div>
 
-      <!-- Column 2: Active Access -->
       <div class="min-w-[85vw] md:min-w-0 snap-center bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[600px] md:h-[650px] shrink-0">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-semibold text-sm text-indigo-400">Active Access</h3>
@@ -113,7 +111,6 @@
         <div id="column-activeTrial" class="flex-1 overflow-y-auto space-y-3 pr-1 hide-scrollbar"></div>
       </div>
 
-      <!-- Column 3: Lifetime Access -->
       <div class="min-w-[85vw] md:min-w-0 snap-center bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[600px] md:h-[650px] shrink-0">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-semibold text-sm text-emerald-400">Lifetime Access</h3>
@@ -122,7 +119,6 @@
         <div id="column-closedWon" class="flex-1 overflow-y-auto space-y-3 pr-1 hide-scrollbar"></div>
       </div>
 
-      <!-- Column 4: Expired Access -->
       <div class="min-w-[85vw] md:min-w-0 snap-center bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[600px] md:h-[650px] shrink-0">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-semibold text-sm text-rose-400">Expired Access</h3>
@@ -206,6 +202,54 @@
 
       <div class="mt-4 md:mt-6 space-y-4">
         
+        <!-- Visible Profile Card Preview -->
+        <div class="mb-2">
+          <label class="text-xs text-slate-500 uppercase font-semibold mb-2 block">Card Preview & Export</label>
+          
+          <div id="cardExportTarget" class="w-full rounded-[16px] p-5 shadow-2xl flex flex-col justify-between text-white font-sans border border-slate-600/40 relative overflow-hidden" style="background: linear-gradient(135deg, #374151 0%, #111827 100%); aspect-ratio: 1.586/1;">
+              <!-- Top Row -->
+              <div class="flex justify-between items-start">
+                  <div>
+                      <h1 class="text-3xl font-bold tracking-tight text-white mb-0 leading-none">OpenX</h1>
+                      <p class="text-[9px] tracking-[0.25em] font-bold text-slate-300 mt-1 uppercase">Smart Board</p>
+                  </div>
+                  <!-- Gold Chip -->
+                  <div class="w-12 h-9 rounded-md opacity-90 shadow-sm border border-yellow-300/20" style="background: linear-gradient(135deg, #fde047 0%, #eab308 100%);"></div>
+              </div>
+              
+              <!-- Middle Row -->
+              <div class="mt-auto mb-4">
+                  <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Profile Number</p>
+                  <p class="text-xl text-slate-100 font-mono tracking-widest font-bold uppercase" id="cardCode">OXCC 2TUH ZPOD MS00</p>
+              </div>
+
+              <!-- Bottom Row -->
+              <div class="flex justify-between items-end">
+                  <div class="flex-1 pr-2">
+                      <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
+                      <p class="text-base text-white font-bold uppercase truncate" id="cardBuyer">AKA</p>
+                  </div>
+                  <div class="text-left pr-4" id="cardStartContainer">
+                      <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Start Date</p>
+                      <p class="text-base text-white font-bold uppercase" id="cardStart">10/24</p>
+                  </div>
+                  <div class="text-right transition-opacity duration-200" id="cardExpiryContainer">
+                      <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
+                      <p class="text-base text-white font-bold uppercase" id="cardExpiry">10/96</p>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Sharing Controls -->
+          <div class="flex items-center gap-2 mt-4 pl-1">
+            <input type="checkbox" id="hideExpiryToggle" class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-600 focus:ring-offset-slate-950 cursor-pointer">
+            <label for="hideExpiryToggle" class="text-xs text-slate-400 select-none cursor-pointer">Hide Expiry Date on Image</label>
+          </div>
+          <button id="btnShareCard" onclick="shareCard()" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
+            <i data-lucide="image" class="w-4 h-4"></i> Share / Save Image
+          </button>
+        </div>
+
         <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-800 space-y-3">
           <div>
             <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Purchased By</label>
@@ -217,31 +261,11 @@
           </button>
         </div>
 
-        <div class="p-4 bg-slate-950 rounded-lg border border-slate-800 relative group">
-          <label class="text-xs text-slate-500 uppercase font-semibold">App Access Key</label>
-          <p id="drawerCode" class="text-lg font-mono text-indigo-400 mt-1 break-all select-all">-</p>
-          
-          <hr class="border-slate-800 my-4" />
-          
-          <!-- Share Profile Card Interface[span_0](start_span)[span_0](end_span) -->
-          <button id="btnShareCard" onclick="shareCard()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
-            <i data-lucide="image" class="w-4 h-4"></i> Share Key as Profile Card
-          </button>
-          <div class="flex items-center gap-2 mt-3 pl-1">
-            <input type="checkbox" id="hideExpiryToggle" class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-600 focus:ring-offset-slate-950">
-            <label for="hideExpiryToggle" class="text-xs text-slate-400 select-none cursor-pointer">Hide Expiry Date on Image[span_1](start_span)[span_1](end_span)</label>
-          </div>
-        </div>
-
         <div>
           <label class="text-xs text-slate-500 uppercase font-semibold">Claimed By (Device Account)</label>
           <p id="drawerEmail" class="text-sm md:text-base text-white font-medium break-all mt-1">-</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-xs text-slate-500 uppercase font-semibold">Start Date</label>
-            <p id="drawerStartDate" class="text-sm text-slate-300 mt-1">-</p>
-          </div>
           <div>
             <label class="text-xs text-slate-500 uppercase font-semibold">Status / Time</label>
             <p id="drawerStatus" class="text-sm text-slate-300 mt-1">-</p>
@@ -279,51 +303,13 @@
     </div>
   </aside>
 
-  <!-- ========================================== -->
-  <!-- HIDDEN TEMPLATE FOR IMAGE SHARE GENERATION -->
-  <!-- Designed strictly to match reference[span_2](start_span)[span_2](end_span) -->
-  <!-- ========================================== -->
-  <div id="shareCardTemplate" class="fixed top-0 left-0 -z-50 opacity-0 pointer-events-none w-[480px] h-[300px] rounded-[20px] p-8 shadow-2xl flex flex-col justify-between text-white font-sans border border-slate-600/40" style="background: linear-gradient(135deg, #374151 0%, #111827 100%); font-family: ui-sans-serif, system-ui, sans-serif;">
-    <!-- Top Row -->
-    <div class="flex justify-between items-start">
-        <div>
-            <h1 class="text-4xl font-bold tracking-tight text-white mb-0 leading-none">OpenX</h1>
-            <p class="text-[11px] tracking-[0.25em] font-bold text-slate-300 mt-1 uppercase">Smart Board</p>
-        </div>
-        <!-- Simulated Gold Chip[span_3](start_span)[span_3](end_span) -->
-        <div class="w-14 h-10 rounded-md opacity-90 shadow-sm border border-yellow-300/20" style="background: linear-gradient(135deg, #fde047 0%, #eab308 100%);"></div>
-    </div>
-    
-    <!-- Middle Row: Profile Number[span_4](start_span)[span_4](end_span) -->
-    <div class="mt-6">
-        <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Profile Number</p>
-        <p class="text-3xl text-slate-100 font-mono tracking-widest font-bold uppercase" id="cardCode">OXCC 2TUH ZPOD MS00</p>
-    </div>
-
-    <!-- Bottom Row: Card Holder, Start, Expires[span_5](start_span)[span_5](end_span) -->
-    <div class="flex justify-between items-end mt-6">
-        <div class="flex-1">
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
-            <p class="text-xl text-white font-bold uppercase truncate pr-4" id="cardBuyer">AKA</p>
-        </div>
-        <div class="text-left pr-8" id="cardStartContainer">
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Start Date</p>
-            <p class="text-lg text-white font-bold uppercase" id="cardStart">10/24</p>
-        </div>
-        <div class="text-right" id="cardExpiryContainer">
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
-            <p class="text-lg text-white font-bold uppercase" id="cardExpiry">10/96</p>
-        </div>
-    </div>
-  </div>
-
   <!-- Firebase Script & App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // Your exact Firebase credentials[span_6](start_span)[span_6](end_span)
+    // Your exact Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyBo1BSDC-5om7ekOilj8QEH7OTbfRU0dY4",
       authDomain: "openx-smartboard-352af.firebaseapp.com",
@@ -425,7 +411,6 @@
       return result;
     }
 
-    // Modal & Quick Presets Logic
     window.openCreateModal = function() {
       document.getElementById("createModalBackdrop").classList.remove("hidden");
       document.getElementById("newStartDate").valueAsDate = new Date();
@@ -682,25 +667,39 @@
       });
     }
 
+    // --- DRAWER & VISUAL CARD PREVIEW ---
     window.openDrawer = function(user, statusText, uid) {
       activeSelectedUid = uid;
       activeSelectedUser = user;
-      
-      const startDateStr = user.startsAt ? new Date(user.startsAt).toLocaleDateString() : 'Immediate';
 
+      // Populate traditional data
       document.getElementById("drawerBuyerName").innerText = user.buyerName || 'Unknown Buyer';
       document.getElementById("drawerBuyerEmail").innerText = user.buyerEmail || 'No Email Provided';
-
       document.getElementById("drawerEmail").innerHTML = user.claimedByEmail 
         ? `<span class="text-emerald-400">${user.claimedByEmail}</span>` 
         : '<span class="text-amber-500 italic">Unclaimed (Available)</span>';
-      
-      document.getElementById("drawerCode").innerText = user.activeCode || 'N/A';
       document.getElementById("drawerStatus").innerText = statusText;
-      document.getElementById("drawerStartDate").innerText = startDateStr;
 
-      // Reset toggle logic on open
+      // --- POPULATE VISUAL CARD PREVIEW ---
+      document.getElementById('cardBuyer').innerText = user.buyerName || 'Client';
+      
+      let rawCode = user.activeCode || 'N/A';
+      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' '); // Removing hyphens like the image
+      
+      const startD = user.startsAt ? new Date(user.startsAt) : new Date();
+      document.getElementById('cardStart').innerText = `${String(startD.getMonth()+1).padStart(2,'0')}/${String(startD.getFullYear()).slice(-2)}`;
+
+      const expiryContainer = document.getElementById('cardExpiryContainer');
+      if (user.expiresAt >= LIFETIME_TIMESTAMP) {
+         document.getElementById('cardExpiry').innerText = "LIFETIME";
+      } else {
+         const endD = new Date(user.expiresAt);
+         document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
+      }
+
+      // Reset toggle
       document.getElementById('hideExpiryToggle').checked = false;
+      expiryContainer.style.opacity = '1';
 
       document.getElementById("drawerBackdrop").classList.remove("hidden");
       document.getElementById("drawer").classList.remove("translate-x-full");
@@ -713,38 +712,21 @@
       document.getElementById("drawer").classList.add("translate-x-full");
     };
 
-    // --- SHARE PROFILE CARD LOGIC (Reference Image Styling) ---
+    // Toggle Expiry Date Realtime
+    document.getElementById('hideExpiryToggle').addEventListener('change', function() {
+      const expiryContainer = document.getElementById('cardExpiryContainer');
+      if (this.checked) {
+        expiryContainer.style.opacity = '0';
+      } else {
+        expiryContainer.style.opacity = '1';
+      }
+    });
+
+    // --- SHARE PROFILE CARD IMAGE ---
     window.shareCard = async function() {
       if (!activeSelectedUser) return;
-      
-      // Inject Data into Template
-      document.getElementById('cardBuyer').innerText = activeSelectedUser.buyerName || 'Client';
-      
-      // Format Key nicely matching reference (e.g. OXCC 2TUH ZPOD MS00)[span_7](start_span)[span_7](end_span)
-      let rawCode = activeSelectedUser.activeCode || 'N/A';
-      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' ');
-      
-      // Format Start Date (MM/YY)
-      const startD = activeSelectedUser.startsAt ? new Date(activeSelectedUser.startsAt) : new Date();
-      document.getElementById('cardStart').innerText = `${String(startD.getMonth()+1).padStart(2,'0')}/${String(startD.getFullYear()).slice(-2)}`;
 
-      // Toggle Expiry Date rendering
-      const hideExpiry = document.getElementById('hideExpiryToggle').checked;
-      const expiryContainer = document.getElementById('cardExpiryContainer');
-      
-      if (hideExpiry) {
-        expiryContainer.style.display = 'none';
-      } else {
-        expiryContainer.style.display = 'block';
-        if (activeSelectedUser.expiresAt >= LIFETIME_TIMESTAMP) {
-           document.getElementById('cardExpiry').innerText = "LIFETIME";
-        } else {
-           const endD = new Date(activeSelectedUser.expiresAt);
-           document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
-        }
-      }
-
-      const cardEl = document.getElementById('shareCardTemplate');
+      const cardEl = document.getElementById('cardExportTarget');
       const btnShare = document.getElementById('btnShareCard');
       const origHtml = btnShare.innerHTML;
       
@@ -752,6 +734,7 @@
       lucide.createIcons();
 
       try {
+        // html2canvas targetting the visible element prevents blank images
         const canvas = await html2canvas(cardEl, { 
           backgroundColor: null, 
           scale: 3, 
@@ -773,7 +756,6 @@
               triggerDownload(file);
             }
           } else {
-            // Fallback to download link for Desktop browsers
             triggerDownload(file);
           }
 
@@ -800,6 +782,7 @@
       URL.revokeObjectURL(url);
     }
 
+    // Admin Actions
     async function resetClaim() {
       if (!activeSelectedUid) return;
       if (confirm("Are you sure you want to unbind this key? The previous user will be locked out until they provide a new key.")) {
