@@ -97,7 +97,7 @@
       
       <div class="min-w-[85vw] md:min-w-0 snap-center bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-col h-[600px] md:h-[650px] shrink-0">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-sm text-slate-300">Pending Start</h3>
+          <h3 class="font-semibold text-sm text-slate-300">Pending Start (Unclaimed)</h3>
           <span class="text-xs font-medium bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full" id="count-leadIn">0</span>
         </div>
         <div id="column-leadIn" class="flex-1 overflow-y-auto space-y-3 pr-1 hide-scrollbar"></div>
@@ -135,7 +135,7 @@
     <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-4 md:p-6 border-b border-slate-800 flex items-center justify-between shrink-0">
         <h3 class="text-lg font-semibold text-white">Generate App Keys</h3>
-        <button type="button" onclick="closeCreateModal()" class="text-slate-400 hover:text-white transition-colors p-2 -mr-2">
+        <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white transition-colors p-2 -mr-2">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -154,30 +154,29 @@
 
         <hr class="border-slate-800" />
 
-        <!-- License Duration Presets -->
+        <!-- License Duration -->
         <div>
           <label class="block text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">Quick Presets</label>
-          <div class="flex gap-2">
-            <button type="button" onclick="setPreset('7days')" class="flex-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 rounded-lg text-xs font-semibold transition-colors">7-Day Test</button>
-            <button type="button" onclick="setPreset('30days')" class="flex-1 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 py-2 rounded-lg text-xs font-semibold transition-colors">30 Days</button>
+          <div class="flex gap-2 mb-3">
+            <button type="button" onclick="setPreset('7')" class="flex-1 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/40 py-2 rounded-lg text-xs font-semibold transition-colors">7 Days</button>
+            <button type="button" onclick="setPreset('30')" class="flex-1 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 py-2 rounded-lg text-xs font-semibold transition-colors">30 Days</button>
             <button type="button" onclick="setPreset('lifetime')" class="flex-1 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/40 py-2 rounded-lg text-xs font-semibold transition-colors">Lifetime</button>
           </div>
+          
+          <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Access Duration</label>
+          <select id="newValidity" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+            <option value="7">7 Days (Starts upon claim)</option>
+            <option value="30">30 Days (Starts upon claim)</option>
+            <option value="90">90 Days (Starts upon claim)</option>
+            <option value="365">1 Year (Starts upon claim)</option>
+            <option value="lifetime">Lifetime Access</option>
+          </select>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Start Date</label>
-            <input type="date" id="newStartDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" style="color-scheme: dark;">
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Duration (Days)</label>
-            <input type="number" id="newDuration" placeholder="e.g. 7" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
-            <p class="text-[10px] text-slate-500 mt-1">Leave empty for Lifetime. Timer starts upon first claim.</p>
-          </div>
-        </div>
         <div>
           <label class="block text-xs text-slate-400 font-medium mb-1.5 uppercase tracking-wide">Number of Keys to Generate</label>
           <input type="number" id="keyCount" min="1" max="50" value="1" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all">
+          <p class="text-[10px] text-slate-500 mt-1">1 key = 1 device. Expire countdown will only begin when claimed by a device.</p>
         </div>
         
         <div class="pt-2 flex gap-3 shrink-0">
@@ -201,39 +200,41 @@
 
       <div class="mt-4 md:mt-6 space-y-4">
         
-        <!-- VISIBLE PROFILE CARD PREVIEW (Matches reference completely) -->
+        <!-- VISUAL PROFILE CARD PREVIEW[span_1](start_span)[span_1](end_span) -->
         <div class="mb-2">
           <label class="text-xs text-slate-500 uppercase font-semibold mb-2 block">Card Preview & Export</label>
           
-          <div id="cardExportTarget" class="w-full rounded-[16px] p-6 shadow-2xl flex flex-col justify-between text-white font-sans relative overflow-hidden" 
-               style="background: linear-gradient(135deg, #242b3d 0%, #161b26 50%, #0a0d14 100%); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5); aspect-ratio: 1.586/1;">
+          <div id="cardExportTarget" class="w-full rounded-[16px] p-6 shadow-2xl flex flex-col border border-slate-600/40 relative overflow-hidden box-border" style="background: linear-gradient(135deg, #2b3240 0%, #151b23 100%); aspect-ratio: 1.586/1;">
               
+              <!-- Soft radial metallic shine overlay -->
+              <div class="absolute inset-0 opacity-20 pointer-events-none" style="background: radial-gradient(circle at 75% 25%, rgba(255,255,255,0.4) 0%, transparent 60%);"></div>
+
               <!-- Top Row -->
-              <div class="flex justify-between items-start">
-                  <div class="relative inline-block">
-                      <h1 class="text-[34px] md:text-[40px] font-bold tracking-tighter text-white leading-none m-0">OpenX</h1>
-                      <!-- Absolute position tucked tight under OpenX -->
-                      <p class="text-[8px] md:text-[10px] tracking-[0.38em] font-bold text-slate-300 uppercase absolute -bottom-2.5 left-0 whitespace-nowrap">Smart Board</p>
+              <div class="flex justify-between items-start relative z-10">
+                  <div class="flex flex-col -space-y-1"> <!-- Negative space pulls text closer together[span_2](start_span)[span_2](end_span) -->
+                      <h1 class="text-[32px] font-bold tracking-tight text-white m-0 leading-none" style="font-family: Arial, sans-serif;">OpenX</h1>
+                      <p class="text-[9px] tracking-[0.2em] font-bold text-slate-300 m-0 leading-none uppercase pt-0.5">Smart Board</p>
                   </div>
-                  <!-- Gold Chip -->
-                  <div class="w-12 h-9 rounded-md opacity-90 shadow-sm border border-yellow-400/30" style="background: linear-gradient(135deg, #fce76c 0%, #d4af37 50%, #aa7c11 100%);"></div>
+                  <!-- Premium Gold Chip[span_3](start_span)[span_3](end_span) -->
+                  <div class="w-12 h-9 rounded-md shadow-sm border border-yellow-300/30" style="background: linear-gradient(135deg, #fde047 0%, #d4af37 100%);"></div>
               </div>
               
               <!-- Middle Row -->
-              <div class="mt-auto mb-5">
+              <div class="mt-auto mb-6 relative z-10">
                   <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1.5 font-semibold">Profile Number</p>
-                  <p class="text-xl md:text-2xl text-slate-50 font-mono tracking-widest font-bold uppercase drop-shadow-sm" id="cardCode">OX CC2T UHZP ODMS</p>
+                  <!-- Formatted strictly as 14 chars -> OX XXXX XXXX XXXX[span_4](start_span)[span_4](end_span) -->
+                  <p class="text-[22px] text-slate-100 font-mono tracking-[0.15em] font-bold uppercase m-0 leading-none" id="cardCode">OX CC2T UHZP ODMS</p>
               </div>
 
-              <!-- Bottom Row (Start Date removed entirely) -->
-              <div class="flex justify-between items-end pb-1">
-                  <div class="flex-1 pr-4">
+              <!-- Bottom Row (No Start Date) -->
+              <div class="flex justify-between items-end relative z-10 pb-1"> <!-- Extra padding prevents bottom cutoff[span_5](start_span)[span_5](end_span) -->
+                  <div class="flex-1 pr-2">
                       <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
-                      <p class="text-lg md:text-xl text-white font-bold uppercase truncate leading-tight" id="cardBuyer">OFFICE</p>
+                      <p class="text-sm text-white font-bold uppercase truncate m-0 leading-none" id="cardBuyer">OFFICE</p>
                   </div>
                   <div class="text-right transition-opacity duration-200" id="cardExpiryContainer">
                       <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Expires</p>
-                      <p class="text-lg md:text-xl text-white font-bold uppercase leading-tight" id="cardExpiry">LIFETIME</p>
+                      <p class="text-sm text-white font-bold uppercase m-0 leading-none" id="cardExpiry">LIFETIME</p>
                   </div>
               </div>
           </div>
@@ -279,11 +280,11 @@
             <i data-lucide="unlock" class="w-4 h-4 opacity-50"></i>
           </button>
           <button id="btnExtend7" class="w-full bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
-            <span>+ Extend Expiration by 7 Days</span>
+            <span>+ Add 7 Days to Validity</span>
             <i data-lucide="calendar-plus" class="w-4 h-4 opacity-50"></i>
           </button>
           <button id="btnExtend30" class="w-full bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
-            <span>+ Extend Expiration by 30 Days</span>
+            <span>+ Add 30 Days to Validity</span>
             <i data-lucide="calendar-plus" class="w-4 h-4 opacity-50"></i>
           </button>
           <button id="btnLifetime" class="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 py-2.5 rounded-lg text-sm font-medium transition-colors text-left px-4 flex items-center justify-between">
@@ -307,7 +308,6 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // Your exact Firebase credentials
     const firebaseConfig = {
       apiKey: "AIzaSyBo1BSDC-5om7ekOilj8QEH7OTbfRU0dY4",
       authDomain: "openx-smartboard-352af.firebaseapp.com",
@@ -326,18 +326,7 @@
 
     let crmUnsubscribe = null;
     let globalKeysData = []; 
-    const LIFETIME_TIMESTAMP = 4000000000000; 
 
-    // Helper to get active expiry date based on claim status
-    function getCalculatedExpiresAt(user) {
-        if (user.expiresAt) return user.expiresAt;
-        if (user.claimedAt && user.durationDays && user.durationDays !== 'lifetime') {
-            return user.claimedAt + (user.durationDays * 24 * 60 * 60 * 1000);
-        }
-        return null;
-    }
-
-    // --- AUTHENTICATION LOGIC ---
     const authOverlay = document.getElementById('authOverlay');
     const mainAppContent = document.getElementById('mainAppContent');
     const loginError = document.getElementById('loginError');
@@ -391,7 +380,9 @@
       });
     });
 
-    document.getElementById('btnAdminLogout').addEventListener('click', () => signOut(auth));
+    document.getElementById('btnAdminLogout').addEventListener('click', () => {
+      signOut(auth);
+    });
 
     function resetLoginBtn() {
       btnGoogleLogin.innerHTML = `
@@ -405,11 +396,11 @@
       `;
     }
 
+    // EXACTLY 14 Characters total[span_6](start_span)[span_6](end_span) -> 'OX' + 12 alphanumeric
     function generateAppKey() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = 'OX';
-      for (let i = 0; i < 14; i++) {
-        if (i > 0 && i % 4 === 0) result += '-';
+      for (let i = 0; i < 12; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
@@ -417,7 +408,6 @@
 
     window.openCreateModal = function() {
       document.getElementById("createModalBackdrop").classList.remove("hidden");
-      document.getElementById("newStartDate").valueAsDate = new Date();
     };
 
     window.closeCreateModal = function() {
@@ -425,47 +415,52 @@
       document.getElementById("createKeyForm").reset();
     };
 
-    window.setPreset = function(type) {
-      const durInput = document.getElementById("newDuration");
-      if (type === '7days') durInput.value = 7;
-      else if (type === '30days') durInput.value = 30;
-      else if (type === 'lifetime') durInput.value = '';
+    window.setPreset = function(val) {
+      document.getElementById("newValidity").value = val;
     };
 
     window.exportToCSV = function(targetBuyer = null) {
-      const dataToExport = targetBuyer ? globalKeysData.filter(k => k.buyerName === targetBuyer) : globalKeysData;
-      if (dataToExport.length === 0) { alert("No keys available to export."); return; }
+      const dataToExport = targetBuyer 
+        ? globalKeysData.filter(k => k.buyerName === targetBuyer)
+        : globalKeysData;
+
+      if (dataToExport.length === 0) {
+        alert("No keys available to export.");
+        return;
+      }
       
-      let csvContent = "data:text/csv;charset=utf-8,Buyer Name,Buyer Email,License Key,Claimed By,Duration,Expiration Date,Status\n";
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Buyer Name,Buyer Email,License Key,Claimed By,Validity Days,Status\n";
 
       dataToExport.forEach(row => {
         const bName = `"${row.buyerName || 'Unknown'}"`;
         const bEmail = `"${row.buyerEmail || 'N/A'}"`;
         const claimed = `"${row.claimedByEmail || 'Unclaimed'}"`;
-        const duration = row.durationDays === 'lifetime' ? 'Lifetime' : `${row.durationDays} Days`;
+        const validity = `"${row.validityDays === 'lifetime' ? 'Lifetime' : row.validityDays + ' Days'}"`;
         
-        let end = "Pending Claim";
-        let status = "Active (Unclaimed)";
-        
+        let status = "Pending";
         if (row.claimedByEmail) {
-           let exp = getCalculatedExpiresAt(row);
-           if (row.durationDays === 'lifetime' || exp >= LIFETIME_TIMESTAMP) {
-               end = "Lifetime";
-               status = "Lifetime Access";
-           } else if (exp) {
-               end = new Date(exp).toLocaleDateString();
-               if (Date.now() > exp) status = "Expired";
-               else status = "Active Claimed";
-           }
+            status = "Active";
+            if (row.validityDays !== 'lifetime') {
+                const claimTime = row.claimedAt || row.createdAt || Date.now();
+                if (Date.now() > claimTime + (row.validityDays * 24*60*60*1000)) {
+                    status = "Expired";
+                }
+            }
         }
 
-        csvContent += `${bName},${bEmail},${row.activeCode},${claimed},${duration},${end},${status}\n`;
+        csvContent += `${bName},${bEmail},${row.activeCode},${claimed},${validity},${status}\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", targetBuyer ? `OpenX_Keys_${targetBuyer.replace(/\s+/g, '_')}.csv` : `OpenX_All_Keys_${new Date().toISOString().slice(0,10)}.csv`);
+      
+      const fileName = targetBuyer 
+        ? `OpenX_Keys_${targetBuyer.replace(/\s+/g, '_')}.csv` 
+        : `OpenX_All_Keys_${new Date().toISOString().slice(0,10)}.csv`;
+        
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -476,19 +471,21 @@
       const bName = activeSelectedUser.buyerName || 'Client';
       const bEmail = activeSelectedUser.buyerEmail;
 
-      if (!bEmail) { alert("No contact email was saved for this buyer."); return; }
+      if (!bEmail) {
+        alert("No contact email was saved for this buyer.");
+        return;
+      }
       exportToCSV(bName);
-
       const subject = encodeURIComponent(`Your OpenX Smartboard Access Keys - ${bName}`);
       const body = encodeURIComponent(
         `Hello ${bName},\n\n` +
         `Thank you for your purchase. Please find your OpenX Smartboard access keys in the attached Excel/CSV file.\n\n` +
-        `Note: Each key is unique per device. The timer on your access pass only begins ticking down on the exact day it is claimed.\n\n` +
+        `Note: Each key is unique per device. The countdown for expiration only begins when a key is logged in on a device for the first time.\n\n` +
         `Best regards,\nOpenX Team`
       );
-      
       window.location.href = `mailto:${bEmail}?subject=${subject}&body=${body}`;
     };
+
     document.getElementById('btnEmailBuyer').addEventListener('click', window.emailBuyer);
 
     document.getElementById("createKeyForm").addEventListener("submit", async (e) => {
@@ -496,12 +493,8 @@
       
       const buyerName = document.getElementById("newBuyerName").value.trim();
       const buyerEmail = document.getElementById("newBuyerEmail").value.trim();
-      const startDateStr = document.getElementById("newStartDate").value;
-      const durationVal = document.getElementById("newDuration").value;
+      const validityVal = document.getElementById("newValidity").value;
       const keyCount = parseInt(document.getElementById("keyCount").value) || 1;
-
-      const startTimestamp = new Date(startDateStr).getTime();
-      const durationDays = durationVal ? parseInt(durationVal) : 'lifetime';
 
       const generateBtn = e.target.querySelector('button[type="submit"]');
       generateBtn.innerText = "Generating...";
@@ -517,13 +510,12 @@
             buyerName: buyerName,
             buyerEmail: buyerEmail,
             claimedByEmail: null,
-            claimedAt: null, 
             currentDeviceId: null,
-            startsAt: startTimestamp,
-            durationDays: durationDays,
-            expiresAt: durationDays === 'lifetime' ? LIFETIME_TIMESTAMP : null, // Timer starts when claimed
+            validityDays: validityVal === 'lifetime' ? 'lifetime' : parseInt(validityVal),
+            claimedAt: null, // Tracks when the counter officially begins
             createdAt: Date.now()
           };
+
           await setDoc(doc(db, "users", uid), newLicense);
         }
         closeCreateModal();
@@ -537,6 +529,7 @@
 
     function initCrmRealtimeListener() {
       const usersRef = collection(db, "users");
+
       if (crmUnsubscribe) crmUnsubscribe();
 
       crmUnsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -551,26 +544,31 @@
           globalKeysData.push(user); 
 
           const now = Date.now();
-          const startsAt = user.startsAt || 0;
-          
-          let isLifetime = user.durationDays === 'lifetime' || (user.expiresAt && user.expiresAt >= LIFETIME_TIMESTAMP);
-          let activeExpiresAt = getCalculatedExpiresAt(user);
-          let isExpired = false;
-          
-          if (user.claimedByEmail && !isLifetime && activeExpiresAt && now > activeExpiresAt) {
-             isExpired = true;
-          }
+          const isClaimed = !!user.claimedByEmail;
+          const isLifetime = user.validityDays === 'lifetime';
 
-          let stage = "leadIn";
-          if (now < startsAt) stage = "leadIn";
-          else if (isLifetime) stage = "closedWon";
-          else if (isExpired) stage = "expired";
-          else stage = "activeTrial";
+          let stage = "leadIn"; 
+          let isExpired = false;
+
+          if (!isClaimed) {
+             stage = "leadIn";
+          } else if (isLifetime) {
+             stage = "closedWon";
+          } else {
+             const claimTime = user.claimedAt || user.createdAt || now;
+             const expiresAt = claimTime + (user.validityDays * 24 * 60 * 60 * 1000);
+             if (now > expiresAt) {
+                 isExpired = true;
+                 stage = "expired";
+             } else {
+                 stage = "activeTrial";
+             }
+          }
 
           if (stage === "activeTrial" || stage === "closedWon") activeUsersCount++;
           counts[stage]++;
 
-          renderUserCard(uid, user, stage, isLifetime, isExpired, (now < startsAt), activeExpiresAt);
+          renderUserCard(uid, user, stage, isClaimed, isLifetime, isExpired, now);
         });
 
         document.getElementById("statActiveUsers").innerText = activeUsersCount;
@@ -588,17 +586,15 @@
     let activeSelectedUid = null;
     let activeSelectedUser = null;
 
-    function renderUserCard(uid, user, stage, isLifetime, isExpired, isPending, activeExpiresAt) {
+    function renderUserCard(uid, user, stage, isClaimed, isLifetime, isExpired, now) {
       const targetColumn = document.getElementById(`column-${stage}`);
       if (!targetColumn) return;
 
       let timeText = "";
       let badgeClass = "";
-      const now = Date.now();
 
-      if (isPending) {
-        const daysUntil = Math.ceil((user.startsAt - now) / 86400000);
-        timeText = `Starts in ${daysUntil}d`;
+      if (!isClaimed) {
+        timeText = user.validityDays === 'lifetime' ? 'Lifetime (Unclaimed)' : `${user.validityDays} Days (Upon Claim)`;
         badgeClass = 'text-slate-400 bg-slate-800 border border-slate-700';
       } else if (isLifetime) {
         timeText = "Lifetime";
@@ -607,19 +603,22 @@
         timeText = "Expired";
         badgeClass = 'text-rose-400 bg-rose-500/10 border border-rose-500/20';
       } else {
-        if (!user.claimedByEmail) {
-            timeText = `${user.durationDays || '?'}d (Unclaimed)`;
-            badgeClass = 'text-amber-400 bg-amber-500/10 border border-amber-500/20';
-        } else {
-            let daysLeft = activeExpiresAt ? Math.ceil((activeExpiresAt - now) / 86400000) : '?';
-            timeText = `${daysLeft}d left`;
-            badgeClass = 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
-        }
+        const claimTime = user.claimedAt || user.createdAt || now;
+        const expiresAt = claimTime + (user.validityDays * 24 * 60 * 60 * 1000);
+        const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+        timeText = `${daysLeft}d left`;
+        badgeClass = 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/20';
       }
 
-      const claimStatus = user.claimedByEmail 
+      const claimStatus = isClaimed 
         ? `<span class="text-emerald-400"><i data-lucide="user-check" class="w-3 h-3 inline"></i> Claimed</span>`
         : `<span class="text-amber-400"><i data-lucide="unlock" class="w-3 h-3 inline"></i> Unclaimed</span>`;
+
+      // 14 length formatter for the Kanban display
+      let displayCode = user.activeCode || 'N/A';
+      if (displayCode.length === 14 && displayCode.startsWith('OX')) {
+         displayCode = `OX ${displayCode.slice(2,6)} ${displayCode.slice(6,10)} ${displayCode.slice(10,14)}`;
+      }
 
       const card = document.createElement("div");
       card.className = "bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg p-4 cursor-pointer transition-all hover:border-slate-700 shadow-sm group";
@@ -632,7 +631,7 @@
              ${claimStatus}
           </div>
         </div>
-        <div class="mt-3 text-sm font-mono text-white tracking-wider truncate">${user.activeCode || 'N/A'}</div>
+        <div class="mt-3 text-sm font-mono text-white tracking-wider truncate">${displayCode}</div>
         <h4 class="font-medium text-xs text-slate-400 mt-2 truncate"><i data-lucide="building" class="w-3 h-3 inline mr-1"></i>${user.buyerName || 'Unknown Buyer'}</h4>
       `;
 
@@ -651,7 +650,6 @@
       activeSelectedUid = uid;
       activeSelectedUser = user;
 
-      // Drawer data
       document.getElementById("drawerBuyerName").innerText = user.buyerName || 'Unknown Buyer';
       document.getElementById("drawerBuyerEmail").innerText = user.buyerEmail || 'No Email Provided';
       document.getElementById("drawerEmail").innerHTML = user.claimedByEmail 
@@ -659,30 +657,31 @@
         : '<span class="text-amber-500 italic">Unclaimed (Available)</span>';
       document.getElementById("drawerStatus").innerText = statusText;
 
-      // --- POPULATE VISUAL CARD PREVIEW ---
+      // --- VISUAL CARD PREVIEW DATA ASSIGNMENT ---
       document.getElementById('cardBuyer').innerText = user.buyerName || 'Client';
       
-      // Spaced format (e.g. OX CC2T UHZP ODMS)[span_4](start_span)[span_4](end_span)
+      // Formatting key precisely as 14 chars split by space[span_7](start_span)[span_7](end_span)
       let rawCode = user.activeCode || 'N/A';
-      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' '); 
+      if (rawCode.length === 14 && rawCode.startsWith('OX')) {
+         rawCode = `OX ${rawCode.slice(2,6)} ${rawCode.slice(6,10)} ${rawCode.slice(10,14)}`;
+      }
+      document.getElementById('cardCode').innerText = rawCode;
 
-      // Render Expiry
+      // Expiry calc
       const expiryContainer = document.getElementById('cardExpiryContainer');
-      let isLifetime = user.durationDays === 'lifetime' || (user.expiresAt && user.expiresAt >= LIFETIME_TIMESTAMP);
-      
-      if (isLifetime) {
+      if (user.validityDays === 'lifetime') {
          document.getElementById('cardExpiry').innerText = "LIFETIME";
       } else {
-         let activeExp = getCalculatedExpiresAt(user);
-         if (activeExp) {
-             const endD = new Date(activeExp);
-             document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
+         if (user.claimedByEmail) {
+            const claimTime = user.claimedAt || user.createdAt || Date.now();
+            const endD = new Date(claimTime + (user.validityDays * 24 * 60 * 60 * 1000));
+            document.getElementById('cardExpiry').innerText = `${String(endD.getMonth()+1).padStart(2,'0')}/${String(endD.getFullYear()).slice(-2)}`;
          } else {
-             // Not claimed yet, show duration
-             document.getElementById('cardExpiry').innerText = `${user.durationDays || '?'} DAYS`;
+            document.getElementById('cardExpiry').innerText = "UNCLAIMED";
          }
       }
 
+      // Reset hide toggle
       document.getElementById('hideExpiryToggle').checked = false;
       expiryContainer.style.opacity = '1';
 
@@ -698,7 +697,12 @@
     };
 
     document.getElementById('hideExpiryToggle').addEventListener('change', function() {
-      document.getElementById('cardExpiryContainer').style.opacity = this.checked ? '0' : '1';
+      const expiryContainer = document.getElementById('cardExpiryContainer');
+      if (this.checked) {
+        expiryContainer.style.opacity = '0';
+      } else {
+        expiryContainer.style.opacity = '1';
+      }
     });
 
     // --- SHARE PROFILE CARD IMAGE ---
@@ -713,7 +717,12 @@
       lucide.createIcons();
 
       try {
-        const canvas = await html2canvas(cardEl, { backgroundColor: null, scale: 3, logging: false });
+        const canvas = await html2canvas(cardEl, { 
+          backgroundColor: null, 
+          scale: 4, // Up-scaled for extreme clarity
+          logging: false 
+        });
+
         canvas.toBlob(async (blob) => {
           const file = new File([blob], `OpenX_Key_${activeSelectedUser.activeCode}.png`, { type: "image/png" });
           
@@ -724,13 +733,17 @@
                 text: 'Here is your OpenX Smart Board Profile Card.',
                 files: [file]
               });
-            } catch (err) { triggerDownload(file); }
+            } catch (err) {
+              triggerDownload(file);
+            }
           } else {
             triggerDownload(file);
           }
+
           btnShare.innerHTML = origHtml;
           lucide.createIcons();
         });
+
       } catch (err) {
         alert("Failed to generate image card.");
         btnShare.innerHTML = origHtml;
@@ -749,15 +762,17 @@
       URL.revokeObjectURL(url);
     }
 
-    // Admin Actions
     async function resetClaim() {
       if (!activeSelectedUid) return;
       if (confirm("Are you sure you want to unbind this key? The previous user will be locked out until they provide a new key.")) {
         try {
           const userRef = doc(db, "users", activeSelectedUid);
+          // When resetting claim, we remove the claimedAt marker so the countdown resets
           await updateDoc(userRef, { claimedByEmail: null, currentDeviceId: null, claimedAt: null });
           closeDrawer();
-        } catch (err) { alert("Error resetting key claim: " + err.message); }
+        } catch (err) {
+          alert("Error resetting key claim: " + err.message);
+        }
       }
     }
 
@@ -765,26 +780,18 @@
       if (!activeSelectedUid || !activeSelectedUser) return;
       try {
         const userRef = doc(db, "users", activeSelectedUid);
-        const updates = {};
-
+        
         if (additionalDays === 'lifetime') {
-            updates.durationDays = 'lifetime';
-            updates.expiresAt = LIFETIME_TIMESTAMP;
+           await updateDoc(userRef, { validityDays: 'lifetime' });
         } else {
-            if (activeSelectedUser.claimedByEmail) {
-                // Extending an actively claimed key
-                let currentEnd = getCalculatedExpiresAt(activeSelectedUser) || Date.now();
-                if (currentEnd < Date.now()) currentEnd = Date.now();
-                updates.expiresAt = currentEnd + (additionalDays * 24 * 60 * 60 * 1000);
-            } else {
-                // Extending an unclaimed key (Timer hasn't started)
-                let currentDur = activeSelectedUser.durationDays === 'lifetime' ? 0 : (activeSelectedUser.durationDays || 0);
-                updates.durationDays = currentDur + additionalDays;
-            }
+           let currentVal = activeSelectedUser.validityDays;
+           if (currentVal === 'lifetime') currentVal = 0; // Convert back if needed
+           await updateDoc(userRef, { validityDays: currentVal + additionalDays });
         }
-        await updateDoc(userRef, updates);
         closeDrawer();
-      } catch (err) { alert("Error updating user: " + err.message); }
+      } catch (err) {
+        alert("Error updating user: " + err.message);
+      }
     }
 
     async function revokeAccess() {
@@ -793,7 +800,9 @@
         try {
           await deleteDoc(doc(db, "users", activeSelectedUid));
           closeDrawer();
-        } catch (err) { alert("Error revoking user: " + err.message); }
+        } catch (err) {
+          alert("Error revoking user: " + err.message);
+        }
       }
     }
 
