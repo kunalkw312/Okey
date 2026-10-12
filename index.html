@@ -200,7 +200,7 @@
 
       <div class="mt-4 md:mt-6 space-y-4">
         
-        <!-- VISUAL PROFILE CARD PREVIEW[span_1](start_span)[span_1](end_span) -->
+        <!-- VISUAL PROFILE CARD PREVIEW[span_0](start_span)[span_0](end_span) -->
         <div class="mb-2">
           <label class="text-xs text-slate-500 uppercase font-semibold mb-2 block">Card Preview & Export</label>
           
@@ -211,23 +211,22 @@
 
               <!-- Top Row -->
               <div class="flex justify-between items-start relative z-10">
-                  <div class="flex flex-col -space-y-1"> <!-- Negative space pulls text closer together[span_2](start_span)[span_2](end_span) -->
+                  <div class="flex flex-col -space-y-1"> <!-- Negative space pulls text closer together[span_1](start_span)[span_1](end_span) -->
                       <h1 class="text-[32px] font-bold tracking-tight text-white m-0 leading-none" style="font-family: Arial, sans-serif;">OpenX</h1>
                       <p class="text-[9px] tracking-[0.2em] font-bold text-slate-300 m-0 leading-none uppercase pt-0.5">Smart Board</p>
                   </div>
-                  <!-- Premium Gold Chip[span_3](start_span)[span_3](end_span) -->
+                  <!-- Premium Gold Chip[span_2](start_span)[span_2](end_span) -->
                   <div class="w-12 h-9 rounded-md shadow-sm border border-yellow-300/30" style="background: linear-gradient(135deg, #fde047 0%, #d4af37 100%);"></div>
               </div>
               
               <!-- Middle Row -->
               <div class="mt-auto mb-6 relative z-10">
                   <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1.5 font-semibold">Profile Number</p>
-                  <!-- Formatted strictly as 14 chars -> OX XXXX XXXX XXXX[span_4](start_span)[span_4](end_span) -->
                   <p class="text-[22px] text-slate-100 font-mono tracking-[0.15em] font-bold uppercase m-0 leading-none" id="cardCode">OX CC2T UHZP ODMS</p>
               </div>
 
               <!-- Bottom Row (No Start Date) -->
-              <div class="flex justify-between items-end relative z-10 pb-1"> <!-- Extra padding prevents bottom cutoff[span_5](start_span)[span_5](end_span) -->
+              <div class="flex justify-between items-end relative z-10 pb-1"> <!-- Extra padding prevents bottom cutoff[span_3](start_span)[span_3](end_span) -->
                   <div class="flex-1 pr-2">
                       <p class="text-[9px] text-slate-400 uppercase tracking-widest mb-1 font-semibold">Card Holder</p>
                       <p class="text-sm text-white font-bold uppercase truncate m-0 leading-none" id="cardBuyer">OFFICE</p>
@@ -396,11 +395,12 @@
       `;
     }
 
-    // EXACTLY 14 Characters total[span_6](start_span)[span_6](end_span) -> 'OX' + 12 alphanumeric
+    // Generates strictly as OX-XXXX-XXXX-XXXX (17 chars total) as requested
     function generateAppKey() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = 'OX';
       for (let i = 0; i < 12; i++) {
+        if (i % 4 === 0) result += '-';
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
@@ -506,7 +506,7 @@
           const newKey = generateAppKey();
 
           const newLicense = {
-            activeCode: newKey,
+            activeCode: newKey, // Saves exactly as OX-XXXX-XXXX-XXXX in DB
             buyerName: buyerName,
             buyerEmail: buyerEmail,
             claimedByEmail: null,
@@ -614,11 +614,8 @@
         ? `<span class="text-emerald-400"><i data-lucide="user-check" class="w-3 h-3 inline"></i> Claimed</span>`
         : `<span class="text-amber-400"><i data-lucide="unlock" class="w-3 h-3 inline"></i> Unclaimed</span>`;
 
-      // 14 length formatter for the Kanban display
-      let displayCode = user.activeCode || 'N/A';
-      if (displayCode.length === 14 && displayCode.startsWith('OX')) {
-         displayCode = `OX ${displayCode.slice(2,6)} ${displayCode.slice(6,10)} ${displayCode.slice(10,14)}`;
-      }
+      // Formats kanban string by replacing the generated dashes with spaces
+      let displayCode = user.activeCode ? user.activeCode.replace(/-/g, ' ') : 'N/A';
 
       const card = document.createElement("div");
       card.className = "bg-slate-900 hover:bg-slate-800/80 border border-slate-800 rounded-lg p-4 cursor-pointer transition-all hover:border-slate-700 shadow-sm group";
@@ -660,12 +657,9 @@
       // --- VISUAL CARD PREVIEW DATA ASSIGNMENT ---
       document.getElementById('cardBuyer').innerText = user.buyerName || 'Client';
       
-      // Formatting key precisely as 14 chars split by space[span_7](start_span)[span_7](end_span)
+      // Replaces the DB dashes with spaces to match the visual layout strictly[span_4](start_span)[span_4](end_span)
       let rawCode = user.activeCode || 'N/A';
-      if (rawCode.length === 14 && rawCode.startsWith('OX')) {
-         rawCode = `OX ${rawCode.slice(2,6)} ${rawCode.slice(6,10)} ${rawCode.slice(10,14)}`;
-      }
-      document.getElementById('cardCode').innerText = rawCode;
+      document.getElementById('cardCode').innerText = rawCode.replace(/-/g, ' ');
 
       // Expiry calc
       const expiryContainer = document.getElementById('cardExpiryContainer');
